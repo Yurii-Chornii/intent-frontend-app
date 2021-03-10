@@ -5,16 +5,22 @@ import data from "../../store/Data"
 import {useEffect} from "react";
 import "./ToursList.scss"
 
-const ToursList = observer(() =>{
+const ToursList = observer(() => {
     useEffect(() => {
         data.fetchTours();
     }, [])
     console.log(mobx.toJS(data.tours));
 
+    
+    if (data.tours.length === 0){
+        return (
+            <h3>Loading...</h3>
+        )
+    }
+
     return (
         <div>
-
-            Tours List page
+            asdas
         </div>
     );
 })
