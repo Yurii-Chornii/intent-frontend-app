@@ -381,7 +381,7 @@ class Data {
 
     fetchTours = async () => {
         try {
-            this.tours = await fetchTours(true, 50);
+            this.tours = await fetchTours(true, 500);
         } catch (e) {
             console.error(e.message)
         }
@@ -405,11 +405,6 @@ class Data {
         return "Tour is not found"
     }
     //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
-
-
-    // filterToursByPrice = (from: number, till: number) => {
-    //
-    // }
 
     //pagination
     get currentTours(): ITour[] | null {

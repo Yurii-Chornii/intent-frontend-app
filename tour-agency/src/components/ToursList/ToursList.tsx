@@ -27,23 +27,6 @@ const ToursList = observer(() => {
             </div>
         </div>
     );
-    // return (
-    //     <div>
-    //         bla bla
-    //         <div>{data.currentTours && data.currentTours.map(value => (
-    //             <div key={value.id}>
-    //                 {value.id} - {value.title} - {value.price} <br/>
-    //                 <img src={value.imageUrl} alt=""/>
-    //             </div>
-    //         ))}</div>
-    //         <button onClick={() => data.incrementPage()}>inc</button>
-    //         <button onClick={() => data.decrementPage()}>dec</button>
-    //         <button onClick={() => data.sort("asc")}>asc</button>
-    //         <button onClick={() => data.sort("desc")}>desc</button>
-    //         <button onClick={() => data.changeCountCardsOnPage(5)
-    //         }>change to 5</button>
-    //     </div>
-    // );
 })
 
 export default ToursList;
