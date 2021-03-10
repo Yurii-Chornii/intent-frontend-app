@@ -369,6 +369,8 @@ const fetchTours = (success: boolean, timeout: number): Promise<Array<ITour>> =>
 
 class Data {
     tours: ITour[] = [];
+    currentPage: number = 1;
+    countCardsOnPage: number = 9;
 
     constructor() {
         makeAutoObservable(this);
@@ -402,9 +404,30 @@ class Data {
     }
     //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
 
+
     // filterToursByPrice = (from: number, till) => {
     //
     // }
+
+    //pagination
+    get currentTours(): ITour[] | null {
+        if (this.tours.length === 0) return null;
+        const begin = this.countCardsOnPage * (this.currentPage - 1);
+        const end = this.countCardsOnPage * this.currentPage;
+        return this.tours.slice(begin, end)
+    }
+
+    incrementPage = (): void => {
+        this.currentPage = this.currentPage + 1;
+    }
+
+    decrementPage = (): void => {
+        this.currentPage = this.currentPage - 1;
+    }
+
+    changeCurrentPage = (n: number): void => {
+        this.currentPage = n;
+    }
 
 }
 
