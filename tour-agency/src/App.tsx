@@ -1,9 +1,12 @@
-import './App.scss';
+import "./App.scss";
 
-export default function App (){
+const App =() => {
+
     return (
         <div>
             hello Intent!
         </div>
     );
 }
+
+export default App;
