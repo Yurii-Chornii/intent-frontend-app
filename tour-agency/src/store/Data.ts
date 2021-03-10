@@ -383,6 +383,27 @@ class Data {
         }
     }
 
+    sort = (direction: string) => {
+        const sortedTours = [...this.tours];
+        if (direction === 'asc'){
+            sortedTours.sort((a, b) => Number.parseInt(a.price) - Number.parseInt(b.price))
+        } else if (direction === 'desc') {
+            sortedTours.sort((a, b) => Number.parseInt(b.price) - Number.parseInt(a.price))
+        }
+        this.tours = sortedTours;
+    }
+
+    getOneTour = (id: number): ITour | string  => {
+        const foundTour = this.tours.find(value => value.id === id);
+        if (foundTour) {
+            return foundTour;
+        }
+        return "Tour is not found"
+    }
+    //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
+
+
+
 }
 
 export default new Data();
