@@ -364,7 +364,6 @@ const fetchTours = (success: boolean, timeout: number): Promise<Array<ITour>> =>
         }, timeout);
     })
 }
-
 //fake api call
 
 
