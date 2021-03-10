@@ -1,14 +1,8 @@
 import {Route, Switch} from "react-router-dom";
-import "./App.scss";
 import SignIn from "./components/SignIn/SignIn";
 import {IRoute} from "./interfaces/IRoute";
 import ToursList from "./components/ToursList/ToursList";
-import {observer} from "mobx-react-lite";
-
-import * as mobx from "mobx";
-import data from "./store/Data"
-import {useEffect} from "react";
-
+import "./App.scss";
 
 const routes: IRoute[] = [
     {
@@ -25,13 +19,7 @@ const routes: IRoute[] = [
 ];
 
 
-const App = observer(() => {
-    useEffect(() => {
-        data.fetchTours();
-    }, [])
-        console.log(mobx.toJS(data.tours));
-
-    console.log(data.getOneTour(10))
+const App = () => {
 
     return (
         <div>
@@ -47,6 +35,6 @@ const App = observer(() => {
 
         </div>
     );
-})
+}
 
 export default App;

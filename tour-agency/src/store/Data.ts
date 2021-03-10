@@ -402,7 +402,9 @@ class Data {
     }
     //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
 
-
+    // filterToursByPrice = (from: number, till) => {
+    //
+    // }
 
 }
 
