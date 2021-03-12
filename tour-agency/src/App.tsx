@@ -1,9 +1,8 @@
 import {Route, Switch} from "react-router-dom";
-import "./App.scss";
 import SignIn from "./components/SignIn/SignIn";
 import {IRoute} from "./interfaces/IRoute";
 import ToursList from "./components/ToursList/ToursList";
-
+import "./App.scss";
 
 const routes: IRoute[] = [
     {
@@ -20,7 +19,7 @@ const routes: IRoute[] = [
 ];
 
 
-const App =() => {
+const App = () => {
 
     return (
         <div>
@@ -33,7 +32,6 @@ const App =() => {
                 ))}
             </Switch>
             {/*router*/}
-
 
         </div>
     );

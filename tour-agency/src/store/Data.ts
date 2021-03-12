@@ -364,11 +364,15 @@ const fetchTours = (success: boolean, timeout: number): Promise<Array<ITour>> =>
         }, timeout);
     })
 }
+
 //fake api call
 
 
 class Data {
     tours: ITour[] = [];
+    currentPage: number = 1;
+    countCardsOnPage: number = 9;
+
 
     constructor() {
         makeAutoObservable(this);
@@ -377,10 +381,58 @@ class Data {
 
     fetchTours = async () => {
         try {
-            this.tours = await fetchTours(true, 50);
+            this.tours = await fetchTours(true, 500);
         } catch (e) {
             console.error(e.message)
         }
+    }
+
+    sort = (direction: string) => {
+        const sortedTours = [...this.tours];
+        if (direction === 'asc') {
+            sortedTours.sort((a, b) => Number.parseInt(a.price) - Number.parseInt(b.price))
+        } else if (direction === 'desc') {
+            sortedTours.sort((a, b) => Number.parseInt(b.price) - Number.parseInt(a.price))
+        }
+        this.tours = sortedTours;
+    }
+
+    getOneTour = (id: number): ITour | string => {
+        const foundTour = this.tours.find(value => value.id === id);
+        if (foundTour) {
+            return foundTour;
+        }
+        return "Tour is not found"
+    }
+    //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
+
+    //pagination
+    get currentTours(): ITour[] | null {
+        if (this.tours.length === 0) return null;
+        const begin = this.countCardsOnPage * (this.currentPage - 1);
+        const end = this.countCardsOnPage * this.currentPage;
+        return this.tours.slice(begin, end)
+    }
+
+    get countOfPages() {
+        return Math.ceil(this.tours.length / this.countCardsOnPage);
+    }
+
+    incrementPage = (): void => {
+        this.currentPage = this.currentPage + 1;
+    }
+
+    decrementPage = (): void => {
+        this.currentPage = this.currentPage - 1;
+    }
+
+    changeCurrentPage = (n: number): void => {
+        this.currentPage = n;
+    }
+
+    //змінити кількість карточок на сторінці
+    changeCountCardsOnPage = (n: number): void => {
+        this.countCardsOnPage = n;
     }
 
 }
