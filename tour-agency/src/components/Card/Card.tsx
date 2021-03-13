@@ -1,6 +1,6 @@
-import "./Card.scss"
-import {ITour} from "../../interfaces/ITour";
 import {Link, useLocation} from "react-router-dom";
+import {ITour} from "../../interfaces/ITour";
+import "./Card.scss"
 
 
 interface ICardProps {

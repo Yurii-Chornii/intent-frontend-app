@@ -2,8 +2,8 @@ import {Route, Switch} from "react-router-dom";
 import SignIn from "./components/SignIn/SignIn";
 import {IRoute} from "./interfaces/IRoute";
 import ToursList from "./components/ToursList/ToursList";
-import "./App.scss";
 import Tour from "./components/Tour/Tour";
+import "./App.scss";
 
 const routes: IRoute[] = [
     {
