@@ -364,7 +364,6 @@ const fetchTours = (success: boolean, timeout: number): Promise<Array<ITour>> =>
         }, timeout);
     })
 }
-
 //fake api call
 
 
@@ -372,6 +371,7 @@ class Data {
     tours: ITour[] = [];
     currentPage: number = 1;
     countCardsOnPage: number = 9;
+    currentTour: ITour | undefined;
 
 
     constructor() {
@@ -397,12 +397,10 @@ class Data {
         this.tours = sortedTours;
     }
 
-    getOneTour = (id: number): ITour | string => {
-        const foundTour = this.tours.find(value => value.id === id);
-        if (foundTour) {
-            return foundTour;
-        }
-        return "Tour is not found"
+    findAndSetCurrentTour = (id: number): void => {
+        fetchTours(true, 10).then(value => {
+            this.currentTour = value.find(item => item.id === id)
+        }).catch(e => console.log(e));
     }
     //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
 
@@ -434,6 +432,17 @@ class Data {
     changeCountCardsOnPage = (n: number): void => {
         this.countCardsOnPage = n;
     }
+
+    // filter tours by prise from \ till
+    filterByPrice = (from: number, till: number): void => {
+        fetchTours(true, 100)
+            .then((data: ITour[]) => {
+                data = data.filter(value => Number.parseInt(value.price) >= from && Number.parseInt(value.price) <= till)
+                this.tours = data;
+            })
+            .catch(e => console.log(e))
+    }
+
 
 }
 
