@@ -7,6 +7,7 @@ interface ICardProps {
     tour: ITour
 }
 
+
 export default function Card(props: ICardProps) {
     const {pathname} = useLocation();
     const {tour: {imageUrl, price, title, description, id}} = props;

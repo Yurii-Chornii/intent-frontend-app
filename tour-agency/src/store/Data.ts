@@ -372,6 +372,8 @@ class Data {
     currentPage: number = 1;
     countCardsOnPage: number = 9;
     currentTour: ITour | undefined;
+    minPriceFilterMemory: number | undefined = undefined;
+    maxPriceFilterMemory: number | undefined = undefined;
 
 
     constructor() {
@@ -379,9 +381,13 @@ class Data {
         //ця штука ставить всі анотації за нас
     }
 
+    setTours(tours: ITour[]): void {
+        this.tours = tours;
+    }
+
     fetchTours = async () => {
         try {
-            this.tours = await fetchTours(true, 500);
+            this.setTours(await fetchTours(true, 500));
         } catch (e) {
             console.error(e.message)
         }
@@ -397,9 +403,13 @@ class Data {
         this.tours = sortedTours;
     }
 
+    setCurrentTour(tour: ITour | undefined): void{
+        this.currentTour = tour;
+    }
+
     findAndSetCurrentTour = (id: number): void => {
         fetchTours(true, 10).then(value => {
-            this.currentTour = value.find(item => item.id === id)
+            this.setCurrentTour(value.find(item => item.id === id));
         }).catch(e => console.log(e));
     }
     //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
@@ -438,11 +448,22 @@ class Data {
         fetchTours(true, 100)
             .then((data: ITour[]) => {
                 data = data.filter(value => Number.parseInt(value.price) >= from && Number.parseInt(value.price) <= till)
-                this.tours = data;
+                this.setTours(data);
             })
             .catch(e => console.log(e))
     }
 
+    setMaxPriceFilterMemory = (n: number):void => {
+        this.maxPriceFilterMemory = n;
+    }
+    setMinPriceFilterMemory = (n: number):void => {
+        this.minPriceFilterMemory = n;
+    }
+
+    deleteFilterMemory(): void {
+        this.maxPriceFilterMemory = undefined;
+        this.minPriceFilterMemory = undefined;
+    }
 
 }
 

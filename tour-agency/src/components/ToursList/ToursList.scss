@@ -23,11 +23,25 @@
       display: flex;
       flex-wrap: wrap;
 
-      form {
-        i {
-          margin-left: 15px;
-        }
 
+      .fa-funnel-dollar {
+        margin: 3px 3px 0 15px;
+        font-size: 20px;
+      }
+
+      .fa-window-close {
+        font-size: 20px;
+        margin-top: 3px;
+        margin-left: 5px;
+        transition: .2s;
+
+        &:hover {
+          text-shadow: 0 0 1px black;
+          color: red;
+        }
+      }
+
+      form {
         input {
           width: 60px;
           margin-left: 5px;

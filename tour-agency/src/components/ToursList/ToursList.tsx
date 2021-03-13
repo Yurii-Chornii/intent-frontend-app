@@ -1,5 +1,4 @@
 // import * as mobx from "mobx";
-
 import {useEffect, useState} from "react";
 import {observer} from "mobx-react-lite";
 import data from "../../store/Data"
@@ -10,18 +9,11 @@ import Card from "../Card/Card";
 const ToursList = observer(() => {
     const [showSortParams, setShowSortParams] = useState(false);
 
-
     useEffect(() => {
-        data.fetchTours();
+        if (data.tours.length === 0) {
+            data.fetchTours();
+        }
     }, [])
-    // console.log(mobx.toJS(data.tours));
-    // console.log(data.countOfPages)
-
-    if (data.tours.length === 0) {
-        return (
-            <h3>Loading...</h3>
-        )
-    }
 
     const showParamsHandler = (e: any): void => {
         if (!showSortParams) {
@@ -33,6 +25,25 @@ const ToursList = observer(() => {
         }
     }
 
+    const paramsFormHandler = (e: any): void => {
+        e.preventDefault();
+        const from = +e.target[0].value;
+        const till = +e.target[1].value;
+        if (from !== till && from < till) {
+            data.filterByPrice(from, till)
+            data.setMinPriceFilterMemory(from);
+            data.setMaxPriceFilterMemory(till);
+        } else {
+            alert("Filter params is not valid!")
+        }
+    }
+
+    const deleteFilter = (): void => {
+        data.deleteFilterMemory();
+        data.fetchTours();
+    }
+
+
     const params = <div className="params">
         Count tours on the page:
         <select defaultValue={data.countCardsOnPage} name="countToursOnPage" id="countToursOnPage"
@@ -42,15 +53,23 @@ const ToursList = observer(() => {
             <option value="9">9</option>
             <option value="12">12</option>
         </select>
-        <form onSubmit={(e: any) => {
-            e.preventDefault();
-            data.filterByPrice(e.target[0].value, e.target[1].value)
-        }}>
-            <i className="fas fa-funnel-dollar"/>
-            <input type="number" placeholder="price from" min="0" step="50"/>
-            <input type="number" placeholder="price till" min="150" step="50"/>
-            <button>submit</button>
-        </form>
+        <i className="fas fa-funnel-dollar"/>
+        {
+            data.minPriceFilterMemory || data.maxPriceFilterMemory ? (
+                <>
+                    <div>{`Filtered by price from ${data.minPriceFilterMemory} till ${data.maxPriceFilterMemory}`}</div>
+                    <i className="far fa-window-close" onClick={deleteFilter}/>
+                </>
+
+            ) : (
+                <form onSubmit={paramsFormHandler}>
+                    <input type="number" placeholder="price from" min="0" step="50"/>
+                    <input type="number" placeholder="price till" min="150" step="50"/>
+                    <button>submit</button>
+                </form>
+            )
+        }
+
     </div>
 
 
@@ -63,9 +82,14 @@ const ToursList = observer(() => {
                         {showSortParams && params}
                     </div>
                 </div>
-                {data.currentTours && data.currentTours.map(value => (
-                    <Card key={value.id} tour={value}/>
-                ))}
+                {data.tours.length === 0 ? (<h3>Tours is not found</h3>) : (
+                    <>
+                        {data.currentTours && data.currentTours.map(value => (
+                            <Card key={value.id} tour={value}/>
+                        ))}
+                    </>
+                )}
+
             </div>
         </div>
     );
