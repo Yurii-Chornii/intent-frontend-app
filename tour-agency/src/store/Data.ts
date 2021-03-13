@@ -372,6 +372,10 @@ class Data {
     tours: ITour[] = [];
     currentPage: number = 1;
     countCardsOnPage: number = 9;
+    currentTour: ITour | undefined;
+    minPriceFilterMemory: number | undefined = undefined;
+    maxPriceFilterMemory: number | undefined = undefined;
+    sortedStatus: string | undefined = undefined;
 
 
     constructor() {
@@ -379,32 +383,53 @@ class Data {
         //ця штука ставить всі анотації за нас
     }
 
-    fetchTours = async () => {
-        try {
-            this.tours = await fetchTours(true, 500);
-        } catch (e) {
-            console.error(e.message)
-        }
+    setTours(tours: ITour[]): void {
+        this.tours = tours;
     }
 
-    sort = (direction: string) => {
-        const sortedTours = [...this.tours];
-        if (direction === 'asc') {
-            sortedTours.sort((a, b) => Number.parseInt(a.price) - Number.parseInt(b.price))
-        } else if (direction === 'desc') {
-            sortedTours.sort((a, b) => Number.parseInt(b.price) - Number.parseInt(a.price))
-        }
-        this.tours = sortedTours;
+    setCurrentTour(tour: ITour | undefined): void {
+        this.currentTour = tour;
     }
 
-    getOneTour = (id: number): ITour | string => {
-        const foundTour = this.tours.find(value => value.id === id);
-        if (foundTour) {
-            return foundTour;
-        }
-        return "Tour is not found"
+    setSortedStatus(sortedStatus: string | undefined): void {
+        this.sortedStatus = sortedStatus;
     }
-    //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
+
+    incrementPage(): void {
+        this.currentPage = this.currentPage + 1;
+    }
+
+    decrementPage(): void {
+        this.currentPage = this.currentPage - 1;
+    }
+
+    //змінити кількість карточок на сторінці
+    changeCountCardsOnPage(n: number): void {
+        this.countCardsOnPage = n;
+    }
+
+    deleteFilterMemory(): void {
+        this.maxPriceFilterMemory = undefined;
+        this.minPriceFilterMemory = undefined;
+    }
+
+    setMaxPriceFilterMemory(n: number): void {
+        this.maxPriceFilterMemory = n;
+    }
+
+    setMinPriceFilterMemory(n: number): void {
+        this.minPriceFilterMemory = n;
+    }
+
+    changeCurrentPage(n: number): void {
+        this.currentPage = n;
+    }
+
+    findAndSetCurrentTour = (id: number): void => {
+        fetchTours(true, 10).then(value => {
+            this.setCurrentTour(value.find(item => item.id === id));
+        }).catch(e => console.log(e));
+    }
 
     //pagination
     get currentTours(): ITour[] | null {
@@ -414,25 +439,37 @@ class Data {
         return this.tours.slice(begin, end)
     }
 
-    get countOfPages() {
+    get countOfPages(): number {
         return Math.ceil(this.tours.length / this.countCardsOnPage);
     }
 
-    incrementPage = (): void => {
-        this.currentPage = this.currentPage + 1;
+    fetchTours = async () => {
+        try {
+            this.setTours(await fetchTours(true, 50));
+        } catch (e) {
+            console.error(e.message)
+        }
     }
 
-    decrementPage = (): void => {
-        this.currentPage = this.currentPage - 1;
+    sort = (direction: string): void => {
+        const sortedTours = [...this.tours];
+        if (direction === 'asc') {
+            sortedTours.sort((a, b) => Number.parseInt(a.price) - Number.parseInt(b.price))
+        } else if (direction === 'desc') {
+            sortedTours.sort((a, b) => Number.parseInt(b.price) - Number.parseInt(a.price))
+        }
+        this.tours = sortedTours;
     }
 
-    changeCurrentPage = (n: number): void => {
-        this.currentPage = n;
-    }
-
-    //змінити кількість карточок на сторінці
-    changeCountCardsOnPage = (n: number): void => {
-        this.countCardsOnPage = n;
+    // filter tours by prise from \ till
+    filterByPrice = (from: number, till: number): void => {
+        fetchTours(true, 50)
+            .then((data: ITour[]) => {
+                data = data.filter(value => Number.parseInt(value.price) >= from && Number.parseInt(value.price) <= till)
+                this.setTours(data);
+                if (this.sortedStatus) this.sort(this.sortedStatus);
+            })
+            .catch(e => console.log(e))
     }
 
 }

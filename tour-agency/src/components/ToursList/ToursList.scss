@@ -1,10 +1,74 @@
-.cads-box{
+.cads-box {
   margin: auto;
   display: flex;
   flex-wrap: wrap;
   width: 100%;
   max-width: 1400px;
   justify-content: space-around;
-  padding-top: 20px;
 }
 
+.sort-and-filter-box {
+  width: 90%;
+  margin: auto;
+  padding: 20px 0;
+  display: flex;
+  justify-content: flex-end;
+
+  &__menu {
+    transition: 1s;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.params {
+  display: flex;
+  flex-wrap: wrap;
+
+  .fa-funnel-dollar {
+    margin: 0 3px 0 15px;
+    font-size: 20px;
+  }
+
+  .fa-window-close {
+    font-size: 20px;
+    margin-left: 5px;
+
+    &:hover {
+      color: red;
+      cursor: pointer;
+    }
+  }
+
+  .fa-sort-numeric-down, .fa-sort-numeric-down-alt {
+    font-size: 22px;
+    margin-left: 7px;
+
+    &:hover {
+      color: green;
+      cursor: pointer;
+    }
+  }
+
+  form {
+    input {
+      width: 60px;
+      margin-left: 5px;
+    }
+  }
+}
+
+.opened-params {
+  margin-right: 15px;
+  transform: rotate(180deg);
+}
+
+.arrow {
+  font-size: 30px;
+  transition: .3s;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
