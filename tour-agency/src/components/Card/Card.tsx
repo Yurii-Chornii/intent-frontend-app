@@ -1,12 +1,11 @@
-import "./Card.scss"
-import {ITour} from "../../interfaces/ITour";
 import {Link, useLocation} from "react-router-dom";
+import {ITour} from "../../interfaces/ITour";
+import "./Card.scss"
 
 
 interface ICardProps {
     tour: ITour
 }
-
 
 export default function Card(props: ICardProps) {
     const {pathname} = useLocation();

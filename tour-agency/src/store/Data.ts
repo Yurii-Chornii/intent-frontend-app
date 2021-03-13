@@ -364,6 +364,7 @@ const fetchTours = (success: boolean, timeout: number): Promise<Array<ITour>> =>
         }, timeout);
     })
 }
+
 //fake api call
 
 
@@ -386,6 +387,62 @@ class Data {
         this.tours = tours;
     }
 
+    setCurrentTour(tour: ITour | undefined): void {
+        this.currentTour = tour;
+    }
+
+    setSortedStatus(sortedStatus: string | undefined): void {
+        this.sortedStatus = sortedStatus;
+    }
+
+    incrementPage(): void {
+        this.currentPage = this.currentPage + 1;
+    }
+
+    decrementPage(): void {
+        this.currentPage = this.currentPage - 1;
+    }
+
+    //змінити кількість карточок на сторінці
+    changeCountCardsOnPage(n: number): void {
+        this.countCardsOnPage = n;
+    }
+
+    deleteFilterMemory(): void {
+        this.maxPriceFilterMemory = undefined;
+        this.minPriceFilterMemory = undefined;
+    }
+
+    setMaxPriceFilterMemory(n: number): void {
+        this.maxPriceFilterMemory = n;
+    }
+
+    setMinPriceFilterMemory(n: number): void {
+        this.minPriceFilterMemory = n;
+    }
+
+    changeCurrentPage(n: number): void {
+        this.currentPage = n;
+    }
+
+    findAndSetCurrentTour = (id: number): void => {
+        fetchTours(true, 10).then(value => {
+            this.setCurrentTour(value.find(item => item.id === id));
+        }).catch(e => console.log(e));
+    }
+
+    //pagination
+    get currentTours(): ITour[] | null {
+        if (this.tours.length === 0) return null;
+        const begin = this.countCardsOnPage * (this.currentPage - 1);
+        const end = this.countCardsOnPage * this.currentPage;
+        return this.tours.slice(begin, end)
+    }
+
+    get countOfPages(): number {
+        return Math.ceil(this.tours.length / this.countCardsOnPage);
+    }
+
     fetchTours = async () => {
         try {
             this.setTours(await fetchTours(true, 50));
@@ -404,70 +461,15 @@ class Data {
         this.tours = sortedTours;
     }
 
-    setCurrentTour(tour: ITour | undefined): void{
-        this.currentTour = tour;
-    }
-
-    setSortedStatus(sortedStatus: string | undefined): void{
-        this.sortedStatus = sortedStatus;
-    }
-
-    findAndSetCurrentTour = (id: number): void => {
-        fetchTours(true, 10).then(value => {
-            this.setCurrentTour(value.find(item => item.id === id));
-        }).catch(e => console.log(e));
-    }
-    //<button onClick={() => {console.log(mobx.toJS(data.getOneTour(10)))}}>test</button>
-
-    //pagination
-    get currentTours(): ITour[] | null {
-        if (this.tours.length === 0) return null;
-        const begin = this.countCardsOnPage * (this.currentPage - 1);
-        const end = this.countCardsOnPage * this.currentPage;
-        return this.tours.slice(begin, end)
-    }
-
-    get countOfPages() {
-        return Math.ceil(this.tours.length / this.countCardsOnPage);
-    }
-
-    incrementPage = (): void => {
-        this.currentPage = this.currentPage + 1;
-    }
-
-    decrementPage = (): void => {
-        this.currentPage = this.currentPage - 1;
-    }
-
-    changeCurrentPage = (n: number): void => {
-        this.currentPage = n;
-    }
-
-    //змінити кількість карточок на сторінці
-    changeCountCardsOnPage = (n: number): void => {
-        this.countCardsOnPage = n;
-    }
-
     // filter tours by prise from \ till
     filterByPrice = (from: number, till: number): void => {
         fetchTours(true, 50)
             .then((data: ITour[]) => {
                 data = data.filter(value => Number.parseInt(value.price) >= from && Number.parseInt(value.price) <= till)
                 this.setTours(data);
+                if (this.sortedStatus) this.sort(this.sortedStatus);
             })
             .catch(e => console.log(e))
-    }
-
-    setMaxPriceFilterMemory = (n: number):void => {
-        this.maxPriceFilterMemory = n;
-    }
-    setMinPriceFilterMemory = (n: number):void => {
-        this.minPriceFilterMemory = n;
-    }
-
-    deleteFilterMemory(): void {
-        this.maxPriceFilterMemory = undefined;
-        this.minPriceFilterMemory = undefined;
     }
 
 }

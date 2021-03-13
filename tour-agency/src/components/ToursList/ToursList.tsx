@@ -2,9 +2,8 @@
 import {useEffect, useState} from "react";
 import {observer} from "mobx-react-lite";
 import data from "../../store/Data"
-import "./ToursList.scss"
 import Card from "../Card/Card";
-
+import "./ToursList.scss"
 
 const ToursList = observer(() => {
     const [showSortParams, setShowSortParams] = useState(false);
@@ -30,7 +29,7 @@ const ToursList = observer(() => {
         const from = +e.target[0].value;
         const till = +e.target[1].value;
         if (from !== till && from < till) {
-            data.filterByPrice(from, till)
+            data.filterByPrice(from, till);
             data.setMinPriceFilterMemory(from);
             data.setMaxPriceFilterMemory(till);
         } else {
@@ -40,7 +39,11 @@ const ToursList = observer(() => {
 
     const deleteFilter = (): void => {
         data.deleteFilterMemory();
-        data.fetchTours();
+        data.fetchTours().then(() => {
+            if (data.sortedStatus) {
+                data.sort(data.sortedStatus);
+            }
+        })
     }
 
     const sortHandler = (direction: string): void => {
@@ -59,7 +62,6 @@ const ToursList = observer(() => {
         }
     }
 
-
     const params = <div className="params">
         Count tours on the page:
         <select defaultValue={data.countCardsOnPage} name="countToursOnPage" id="countToursOnPage"
@@ -77,9 +79,7 @@ const ToursList = observer(() => {
                         <div>{`Filtered by price from ${data.minPriceFilterMemory} till ${data.maxPriceFilterMemory}`}</div>
                         <i className="far fa-window-close" onClick={deleteFilter}/>
                     </>
-
                 ) : (
-
                     <form onSubmit={paramsFormHandler}>
                         <input type="number" placeholder="price from" min="0" step="50"/>
                         <input type="number" placeholder="price till" min="150" step="50"/>
@@ -88,10 +88,11 @@ const ToursList = observer(() => {
 
                 )
         }
-        <i className="fas fa-sort-numeric-down" onClick={() => sortHandler("asc")}/>
-        <i className="fas fa-sort-numeric-down-alt" onClick={() => sortHandler("desc")}/>
+        <i className="fas fa-sort-numeric-down" style={{"color": data.sortedStatus === "asc" ? "green" : ""}}
+           onClick={() => sortHandler("asc")}/>
+        <i className="fas fa-sort-numeric-down-alt" style={{"color": data.sortedStatus === "desc" ? "green" : ""}}
+           onClick={() => sortHandler("desc")}/>
     </div>
-
 
     return (
         <div>
@@ -109,7 +110,6 @@ const ToursList = observer(() => {
                         ))}
                     </>
                 )}
-
             </div>
         </div>
     );
