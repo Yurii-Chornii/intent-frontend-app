@@ -3,6 +3,7 @@ import SignIn from "./components/SignIn/SignIn";
 import {IRoute} from "./interfaces/IRoute";
 import ToursList from "./components/ToursList/ToursList";
 import "./App.scss";
+import Tour from "./components/Tour/Tour";
 
 const routes: IRoute[] = [
     {
@@ -13,8 +14,14 @@ const routes: IRoute[] = [
     },
     {
         id: 2,
+        exact: true,
         path: "/tours",
         component: <ToursList/>
+    },
+    {
+        id: 3,
+        path: "/tours/:id",
+        component: <Tour/>
     }
 ];
 
