@@ -374,6 +374,7 @@ class Data {
     currentTour: ITour | undefined;
     minPriceFilterMemory: number | undefined = undefined;
     maxPriceFilterMemory: number | undefined = undefined;
+    sortedStatus: string | undefined = undefined;
 
 
     constructor() {
@@ -387,13 +388,13 @@ class Data {
 
     fetchTours = async () => {
         try {
-            this.setTours(await fetchTours(true, 500));
+            this.setTours(await fetchTours(true, 50));
         } catch (e) {
             console.error(e.message)
         }
     }
 
-    sort = (direction: string) => {
+    sort = (direction: string): void => {
         const sortedTours = [...this.tours];
         if (direction === 'asc') {
             sortedTours.sort((a, b) => Number.parseInt(a.price) - Number.parseInt(b.price))
@@ -405,6 +406,10 @@ class Data {
 
     setCurrentTour(tour: ITour | undefined): void{
         this.currentTour = tour;
+    }
+
+    setSortedStatus(sortedStatus: string | undefined): void{
+        this.sortedStatus = sortedStatus;
     }
 
     findAndSetCurrentTour = (id: number): void => {
@@ -445,7 +450,7 @@ class Data {
 
     // filter tours by prise from \ till
     filterByPrice = (from: number, till: number): void => {
-        fetchTours(true, 100)
+        fetchTours(true, 50)
             .then((data: ITour[]) => {
                 data = data.filter(value => Number.parseInt(value.price) >= from && Number.parseInt(value.price) <= till)
                 this.setTours(data);

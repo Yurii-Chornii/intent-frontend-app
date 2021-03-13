@@ -18,49 +18,57 @@
     transition: 1s;
     overflow: hidden;
     display: flex;
+  }
+}
 
-    .params {
-      display: flex;
-      flex-wrap: wrap;
+.params {
+  display: flex;
+  flex-wrap: wrap;
 
 
-      .fa-funnel-dollar {
-        margin: 3px 3px 0 15px;
-        font-size: 20px;
-      }
+  .fa-funnel-dollar {
+    margin: 3px 3px 0 15px;
+    font-size: 20px;
+  }
 
-      .fa-window-close {
-        font-size: 20px;
-        margin-top: 3px;
-        margin-left: 5px;
-        transition: .2s;
+  .fa-window-close {
+    font-size: 20px;
+    margin-top: 3px;
+    margin-left: 5px;
 
-        &:hover {
-          text-shadow: 0 0 1px black;
-          color: red;
-        }
-      }
-
-      form {
-        input {
-          width: 60px;
-          margin-left: 5px;
-        }
-      }
+    &:hover {
+      color: red;
+      cursor: pointer;
     }
+  }
 
-    .opened-params {
-      margin-right: 15px;
-      transform: rotate(180deg);
+  .fa-sort-numeric-down, .fa-sort-numeric-down-alt{
+    font-size: 22px;
+    margin: 3px 0 0 7px;
+    &:hover {
+      color: green;
+      cursor: pointer;
     }
+  }
 
-    .arrow {
-      font-size: 30px;
-      transition: .3s;
-
-      &:hover {
-        cursor: pointer;
-      }
+  form {
+    input {
+      width: 60px;
+      margin-left: 5px;
     }
+  }
+}
+
+.opened-params {
+  margin-right: 15px;
+  transform: rotate(180deg);
+}
+
+.arrow {
+  font-size: 30px;
+  transition: .3s;
+
+  &:hover {
+    cursor: pointer;
   }
 }

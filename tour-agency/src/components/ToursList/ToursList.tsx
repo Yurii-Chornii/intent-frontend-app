@@ -43,6 +43,22 @@ const ToursList = observer(() => {
         data.fetchTours();
     }
 
+    const sortHandler = (direction: string): void => {
+        if (data.sortedStatus === undefined || data.sortedStatus !== direction) {
+            data.setSortedStatus(direction);
+            data.sort(direction);
+        } else {
+            data.setSortedStatus(undefined);
+            if (!data.maxPriceFilterMemory) {
+                data.fetchTours();
+            } else {
+                const min = data.minPriceFilterMemory ? data.minPriceFilterMemory : 0;
+                const max = data.maxPriceFilterMemory;
+                data.filterByPrice(min, max);
+            }
+        }
+    }
+
 
     const params = <div className="params">
         Count tours on the page:
@@ -55,21 +71,25 @@ const ToursList = observer(() => {
         </select>
         <i className="fas fa-funnel-dollar"/>
         {
-            data.minPriceFilterMemory || data.maxPriceFilterMemory ? (
-                <>
-                    <div>{`Filtered by price from ${data.minPriceFilterMemory} till ${data.maxPriceFilterMemory}`}</div>
-                    <i className="far fa-window-close" onClick={deleteFilter}/>
-                </>
+            data.minPriceFilterMemory || data.maxPriceFilterMemory ?
+                (
+                    <>
+                        <div>{`Filtered by price from ${data.minPriceFilterMemory} till ${data.maxPriceFilterMemory}`}</div>
+                        <i className="far fa-window-close" onClick={deleteFilter}/>
+                    </>
 
-            ) : (
-                <form onSubmit={paramsFormHandler}>
-                    <input type="number" placeholder="price from" min="0" step="50"/>
-                    <input type="number" placeholder="price till" min="150" step="50"/>
-                    <button>submit</button>
-                </form>
-            )
+                ) : (
+
+                    <form onSubmit={paramsFormHandler}>
+                        <input type="number" placeholder="price from" min="0" step="50"/>
+                        <input type="number" placeholder="price till" min="150" step="50"/>
+                        <button>submit</button>
+                    </form>
+
+                )
         }
-
+        <i className="fas fa-sort-numeric-down" onClick={() => sortHandler("asc")}/>
+        <i className="fas fa-sort-numeric-down-alt" onClick={() => sortHandler("desc")}/>
     </div>
 
 
