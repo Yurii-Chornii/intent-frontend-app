@@ -45,8 +45,6 @@ const ToursList = observer(() => {
         <form onSubmit={(e: any) => {
             e.preventDefault();
             data.filterByPrice(e.target[0].value, e.target[1].value)
-            // console.log(e.target[0]);
-            // data.filterByPrice()
         }}>
             <i className="fas fa-funnel-dollar"/>
             <input type="number" placeholder="price from" min="0" step="50"/>
@@ -65,7 +63,6 @@ const ToursList = observer(() => {
                         {showSortParams && params}
                     </div>
                 </div>
-                {/*{data.tours.length === 0 ? }*/}
                 {data.currentTours && data.currentTours.map(value => (
                     <Card key={value.id} tour={value}/>
                 ))}

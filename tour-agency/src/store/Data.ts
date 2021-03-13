@@ -443,21 +443,7 @@ class Data {
             .catch(e => console.log(e))
     }
 
-    // filterByPrice = async (from: number, till: number): boolean => {
-    //     try {
-    //
-    //     }catch (e){
-    //         console.log(e)
-    //     } finally {
-    //
-    //     }
-    //     fetchTours(true,  100)
-    //         .then((data: ITour[]) => {
-    //             data = data.filter(value => Number.parseInt(value.price) >= from && Number.parseInt(value.price) <= till)
-    //             this.tours = data;
-    //         })
-    //         .catch(e => console.log(e))
-    // }
+
 }
 
 export default new Data();
