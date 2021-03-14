@@ -20,7 +20,7 @@
   }
 
   &__body {
-    padding: 10px;
+    padding: 10px 0px 10px 10px;
   }
 
   &__title {
@@ -28,8 +28,10 @@
   }
   &__footer {
     p{
-      padding: 0 10px;
+      padding: 0 20px;
       text-align: end;
+      font-size: 16pt;
+      margin-left: 20px;
     }
   }
 }

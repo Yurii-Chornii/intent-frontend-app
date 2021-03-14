@@ -1,6 +1,5 @@
 export interface IUser {
     login: string,
-    password: string,
-    tours: any,
+    password: string,    
     cart: any
 }

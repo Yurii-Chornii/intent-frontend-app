@@ -46,7 +46,7 @@ class usersStore {
          }
 
 
-        this.users.push({"login": login, "password": password, "tours": [], "cart": [] })
+        this.users.push({"login": login, "password": password, "cart": [] })
         this.loginInput = ""
         this.passwordInput = ""
         this.regisrationToggle = false            
@@ -92,6 +92,24 @@ class usersStore {
         this.userIndex = 0
         this.saveLocalStorage()
     }
+
+    addTourToCart(id:number){
+        console.log(id)
+        console.log(this)
+
+        console.log("lenght -- ",this.users[this.userIndex].cart.length)
+
+        let arr = (this.users[this.userIndex].cart.push(id))
+        console.log('arrr - ', arr)
+
+        this.saveLocalStorage()
+        
+    }
+
+    pushUserCart(id:number){
+        console.log(this)
+    }
+
 }
 
 export default new usersStore

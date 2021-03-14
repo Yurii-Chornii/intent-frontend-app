@@ -1,16 +1,19 @@
 import {Link, useLocation} from "react-router-dom";
 import {ITour} from "../../interfaces/ITour";
+import usersStore from "../../store/usersStore"
 import "./Card.scss"
 
 
 interface ICardProps {
     tour: ITour,
     isAuth: boolean
+    addToCart(id:number): any
+    
 }
 
 export default function Card(props: ICardProps) {
     const {pathname} = useLocation();
-    const {tour: {imageUrl, price, title, description, id}, isAuth} = props;
+    const {tour: {imageUrl, price, title, description, id}, isAuth, addToCart} = props;
     return (
         <div className="card noselect">
             <div>
@@ -27,7 +30,11 @@ export default function Card(props: ICardProps) {
             <div className="card__footer">
                 <p>{price}</p>
             </div>
-            {isAuth && <i className="fas fa-shopping-cart"/>}
+            {isAuth && 
+            <div>        
+                
+                <button onClick={() => addToCart.call(usersStore, id)}> <i className="fas fa-shopping-cart"/> Add to cart</button>    
+            </div>}
         </div>
 
     );
