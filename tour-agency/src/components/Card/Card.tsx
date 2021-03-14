@@ -4,12 +4,13 @@ import "./Card.scss"
 
 
 interface ICardProps {
-    tour: ITour
+    tour: ITour,
+    isAuth: boolean
 }
 
 export default function Card(props: ICardProps) {
     const {pathname} = useLocation();
-    const {tour: {imageUrl, price, title, description, id}} = props;
+    const {tour: {imageUrl, price, title, description, id}, isAuth} = props;
     return (
         <div className="card noselect">
             <div>
@@ -22,10 +23,11 @@ export default function Card(props: ICardProps) {
                 <p>{
                     description.slice(0, description.indexOf(".") < 100 ? description.indexOf(".") + 1 : 100) + "..."
                 }</p>
-            </div>
+            </div>            
             <div className="card__footer">
                 <p>{price}</p>
             </div>
+            {isAuth && <i className="fas fa-shopping-cart"/>}
         </div>
 
     );

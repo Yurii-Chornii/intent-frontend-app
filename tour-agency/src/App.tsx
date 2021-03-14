@@ -30,6 +30,7 @@ const App = () => {
 
     return (
         <div>
+           <SignIn/> 
            {/*router*/}
             <Switch>
                 {routes.map(el => (
