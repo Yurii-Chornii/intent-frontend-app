@@ -364,7 +364,6 @@ const fetchTours = (success: boolean, timeout: number): Promise<Array<ITour>> =>
         }, timeout);
     })
 }
-
 //fake api call
 
 
@@ -376,7 +375,6 @@ class Data {
     minPriceFilterMemory: number | undefined = undefined;
     maxPriceFilterMemory: number | undefined = undefined;
     sortedStatus: string | undefined = undefined;
-
 
     constructor() {
         makeAutoObservable(this);
@@ -393,6 +391,10 @@ class Data {
 
     setSortedStatus(sortedStatus: string | undefined): void {
         this.sortedStatus = sortedStatus;
+    }
+
+    setCurrentPage(n: number): void{
+        this.currentPage = n;
     }
 
     incrementPage(): void {
