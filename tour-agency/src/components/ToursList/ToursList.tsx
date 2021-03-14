@@ -1,4 +1,3 @@
-// import * as mobx from "mobx";
 import {useEffect, useState} from "react";
 import {observer} from "mobx-react-lite";
 import data from "../../store/Data"
@@ -7,6 +6,8 @@ import "./ToursList.scss"
 
 const ToursList = observer(() => {
     const [showSortParams, setShowSortParams] = useState(false);
+    const {currentPage, countOfPages} = data;
+
 
     useEffect(() => {
         if (data.tours.length === 0) {
@@ -32,6 +33,7 @@ const ToursList = observer(() => {
             data.filterByPrice(from, till);
             data.setMinPriceFilterMemory(from);
             data.setMaxPriceFilterMemory(till);
+            data.setCurrentPage(1);
         } else {
             alert("Filter params is not valid!")
         }
@@ -65,7 +67,10 @@ const ToursList = observer(() => {
     const params = <div className="params">
         Count tours on the page:
         <select defaultValue={data.countCardsOnPage} name="countToursOnPage" id="countToursOnPage"
-                onChange={(e) => data.changeCountCardsOnPage(+e.target.value)}>
+                onChange={(e) => {
+                    data.changeCountCardsOnPage(+e.target.value);
+                    data.setCurrentPage(1);
+                }}>
             <option value="3">3</option>
             <option value="6">6</option>
             <option value="9">9</option>
@@ -94,6 +99,14 @@ const ToursList = observer(() => {
            onClick={() => sortHandler("desc")}/>
     </div>
 
+    const pagination = <div className="pagination">
+        {currentPage > 2 && <i className="fas fa-step-backward" onClick={() => data.setCurrentPage(1)}/>}
+        {currentPage > 1 && <i className="fas fa-caret-left" onClick={() => data.decrementPage()}/>}
+        {`${currentPage} of ${countOfPages}`}
+        {currentPage < countOfPages && <i className="fas fa-caret-right" onClick={() => data.incrementPage()}/>}
+        {currentPage < (countOfPages - 1) && <i className="fas fa-step-forward" onClick={() => data.setCurrentPage(countOfPages)}/>}
+    </div>
+
     return (
         <div>
             <div className="cads-box">
@@ -111,6 +124,9 @@ const ToursList = observer(() => {
                     </>
                 )}
             </div>
+            {
+                countOfPages > 1 && pagination
+            }
         </div>
     );
 })
