@@ -364,24 +364,114 @@ const fetchTours = (success: boolean, timeout: number): Promise<Array<ITour>> =>
         }, timeout);
     })
 }
-
 //fake api call
 
 
 class Data {
     tours: ITour[] = [];
+    currentPage: number = 1;
+    countCardsOnPage: number = 9;
+    currentTour: ITour | undefined;
+    minPriceFilterMemory: number | undefined = undefined;
+    maxPriceFilterMemory: number | undefined = undefined;
+    sortedStatus: string | undefined = undefined;
 
     constructor() {
         makeAutoObservable(this);
         //ця штука ставить всі анотації за нас
     }
 
+    setTours(tours: ITour[]): void {
+        this.tours = tours;
+    }
+
+    setCurrentTour(tour: ITour | undefined): void {
+        this.currentTour = tour;
+    }
+
+    setSortedStatus(sortedStatus: string | undefined): void {
+        this.sortedStatus = sortedStatus;
+    }
+
+    setCurrentPage(n: number): void{
+        this.currentPage = n;
+    }
+
+    incrementPage(): void {
+        this.currentPage = this.currentPage + 1;
+    }
+
+    decrementPage(): void {
+        this.currentPage = this.currentPage - 1;
+    }
+
+    //змінити кількість карточок на сторінці
+    changeCountCardsOnPage(n: number): void {
+        this.countCardsOnPage = n;
+    }
+
+    deleteFilterMemory(): void {
+        this.maxPriceFilterMemory = undefined;
+        this.minPriceFilterMemory = undefined;
+    }
+
+    setMaxPriceFilterMemory(n: number): void {
+        this.maxPriceFilterMemory = n;
+    }
+
+    setMinPriceFilterMemory(n: number): void {
+        this.minPriceFilterMemory = n;
+    }
+
+    changeCurrentPage(n: number): void {
+        this.currentPage = n;
+    }
+
+    findAndSetCurrentTour = (id: number): void => {
+        fetchTours(true, 10).then(value => {
+            this.setCurrentTour(value.find(item => item.id === id));
+        }).catch(e => console.log(e));
+    }
+
+    //pagination
+    get currentTours(): ITour[] | null {
+        if (this.tours.length === 0) return null;
+        const begin = this.countCardsOnPage * (this.currentPage - 1);
+        const end = this.countCardsOnPage * this.currentPage;
+        return this.tours.slice(begin, end)
+    }
+
+    get countOfPages(): number {
+        return Math.ceil(this.tours.length / this.countCardsOnPage);
+    }
+
     fetchTours = async () => {
         try {
-            this.tours = await fetchTours(true, 50);
+            this.setTours(await fetchTours(true, 50));
         } catch (e) {
             console.error(e.message)
         }
+    }
+
+    sort = (direction: string): void => {
+        const sortedTours = [...this.tours];
+        if (direction === 'asc') {
+            sortedTours.sort((a, b) => Number.parseInt(a.price) - Number.parseInt(b.price))
+        } else if (direction === 'desc') {
+            sortedTours.sort((a, b) => Number.parseInt(b.price) - Number.parseInt(a.price))
+        }
+        this.tours = sortedTours;
+    }
+
+    // filter tours by prise from \ till
+    filterByPrice = (from: number, till: number): void => {
+        fetchTours(true, 50)
+            .then((data: ITour[]) => {
+                data = data.filter(value => Number.parseInt(value.price) >= from && Number.parseInt(value.price) <= till)
+                this.setTours(data);
+                if (this.sortedStatus) this.sort(this.sortedStatus);
+            })
+            .catch(e => console.log(e))
     }
 
 }
