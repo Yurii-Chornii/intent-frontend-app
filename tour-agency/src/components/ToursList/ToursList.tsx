@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {observer} from "mobx-react-lite";
 import data from "../../store/Data"
+import usersStore from "../../store/usersStore"
 import Card from "../Card/Card";
 import "./ToursList.scss"
 
@@ -86,8 +87,11 @@ const ToursList = observer(() => {
                     </>
                 ) : (
                     <form onSubmit={paramsFormHandler}>
-                        <input type="number" placeholder="price from" min="0" step="50"/>
-                        <input type="number" placeholder="price till" min="150" step="50"/>
+                        {/* <input type="number" placeholder="price from" min="0" step="50"/>
+                        <input type="number" placeholder="price till" min="150" step="50"/> */}
+                        <input type="text" placeholder="price from" min="0" max="1500" step="50" name="minrange"/>
+                        <input type="text" placeholder="price till" min="150" max={1500} step="50"/>
+
                         <button>submit</button>
                     </form>
 
@@ -119,7 +123,7 @@ const ToursList = observer(() => {
                 {data.tours.length === 0 ? (<h3>Tours is not found</h3>) : (
                     <>
                         {data.currentTours && data.currentTours.map(value => (
-                            <Card key={value.id} tour={value}/>
+                            <Card key={value.id} tour={value} isAuth={usersStore.isAuth} addToCart={usersStore.addTourToCart}/>
                         ))}
                     </>
                 )}

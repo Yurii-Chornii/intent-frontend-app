@@ -3,6 +3,7 @@ import SignIn from "./components/SignIn/SignIn";
 import {IRoute} from "./interfaces/IRoute";
 import ToursList from "./components/ToursList/ToursList";
 import Tour from "./components/Tour/Tour";
+import ShoppingCart from "../src/components/ShoppingCart/ShoppingCart"
 import "./App.scss";
 
 const routes: IRoute[] = [
@@ -10,7 +11,7 @@ const routes: IRoute[] = [
         id: 1,
         exact: true,
         path: "/",
-        component: <SignIn/>
+        component: <ToursList/>
     },
     {
         id: 2,
@@ -22,6 +23,11 @@ const routes: IRoute[] = [
         id: 3,
         path: "/tours/:id",
         component: <Tour/>
+    },
+    {
+        id: 4,
+        path: "/cart",
+        component: <ShoppingCart/>
     }
 ];
 
@@ -30,6 +36,7 @@ const App = () => {
 
     return (
         <div>
+           <SignIn/> 
            {/*router*/}
             <Switch>
                 {routes.map(el => (
@@ -39,7 +46,6 @@ const App = () => {
                 ))}
             </Switch>
             {/*router*/}
-
         </div>
     );
 }
