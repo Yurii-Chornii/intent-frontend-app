@@ -1,0 +1,43 @@
+.tour-page-button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.tour{
+  width: 90%;
+  max-width: 800px;
+  border-radius: 5px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+  margin: 20px auto 0;
+  padding: 15px 20px;
+
+  &__header{
+    img{
+      display: block;
+      margin: auto;
+      max-width: 100%;
+    }
+  }
+  &__title{
+    text-align: center;
+  }
+  &__description{
+    width: 100%;
+    max-width: 700px;
+    text-align: center;
+    margin: auto;
+  }
+  &__footer{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+
+}
