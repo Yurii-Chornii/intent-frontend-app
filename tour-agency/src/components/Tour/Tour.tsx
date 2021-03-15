@@ -3,6 +3,7 @@ import data from "../../store/Data"
 import {observer} from "mobx-react-lite";
 import {useEffect} from "react";
 import "./Tour.scss"
+import usersStore from "../../store/usersStore"
 import {log} from "util";
 
 
@@ -40,9 +41,13 @@ const Tour = observer(() => {
                             </article>
                         </section>
                         <footer className="tour__footer">
-                            <div>
-                                {true && <button className="tour-page-button">add to cart</button>}
-                            </div>
+                            {usersStore.isAuth && ( 
+                                <div>
+                                    {/* <button className="tour-page-button" onClick={() => usersStore.addTourToCart.call(usersStore, data.currentTour.id)}> add to cart</button> */}
+                                    <button className="tour-page-button" > add to cart</button>
+                                </div>
+                             ) }
+                            
                             <b>{data.currentTour.price}</b>
                         </footer>
                     </div>) : (<div>
