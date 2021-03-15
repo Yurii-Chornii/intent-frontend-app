@@ -3,7 +3,6 @@ import data from "../../store/Data"
 import {observer} from "mobx-react-lite";
 import {useEffect} from "react";
 import "./Tour.scss"
-import {log} from "util";
 
 
 interface IParams {
