@@ -445,6 +445,10 @@ class Data {
         return Math.ceil(this.tours.length / this.countCardsOnPage);
     }
 
+    getTours = () => {
+        return fetchTours(true, 20);
+    }
+
     fetchTours = async () => {
         try {
             this.setTours(await fetchTours(true, 50));

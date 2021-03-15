@@ -1,11 +1,10 @@
-import {makeAutoObservable} from "mobx"
+import {makeAutoObservable, observable, computed} from "mobx"
 import {IUser} from "../interfaces/IUser";
 
 class usersStore {
     users: IUser[] = []
     isAuth:boolean = false
-    userIndex:number = 0
-    user:string = "" 
+    userIndex:number = 0     
     regisrationToggle:boolean = false       
     loginInput:string = ""
     passwordInput:string = ""
@@ -94,21 +93,29 @@ class usersStore {
     }
 
     addTourToCart(id:number){
-        console.log(id)
-        console.log(this)
 
-        console.log("lenght -- ",this.users[this.userIndex].cart.length)
+        if (parseInt(this.users[this.userIndex].cart.indexOf(id))<0) { this.users[this.userIndex].cart.push(id) }        
+        this.saveLocalStorage()        
+    }
 
-        let arr = (this.users[this.userIndex].cart.push(id))
-        console.log('arrr - ', arr)
-
-        this.saveLocalStorage()
+    delTourFromCart(id:number){   
         
-    }
+        console.log("Del index - ", id)
+       
+        let index:number=-1
+        let lenght = this.users[this.userIndex].cart.length        
 
-    pushUserCart(id:number){
-        console.log(this)
-    }
+        for(let i=0; i<lenght; i++){
+            let m = this.users[this.userIndex].cart[i]            
+            if (this.users[this.userIndex].cart[i] == id){
+                index = i
+            }
+        }        
+
+        if(index>-1){this.users[this.userIndex].cart.splice(index, 1)}
+
+        this.saveLocalStorage()        
+    }   
 
 }
 

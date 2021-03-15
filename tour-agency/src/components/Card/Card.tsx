@@ -28,13 +28,14 @@ export default function Card(props: ICardProps) {
                 }</p>
             </div>            
             <div className="card__footer">
+                <div>
+            {isAuth && 
+                    <button onClick={() => addToCart.call(usersStore, id)}> <i className="fas fa-shopping-cart"/> Add to cart</button>                      
+            }
+            </div>
                 <p>{price}</p>
             </div>
-            {isAuth && 
-            <div>        
-                
-                <button onClick={() => addToCart.call(usersStore, id)}> <i className="fas fa-shopping-cart"/> Add to cart</button>    
-            </div>}
+            
         </div>
 
     );

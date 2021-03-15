@@ -89,8 +89,8 @@ const ToursList = observer(() => {
                     <form onSubmit={paramsFormHandler}>
                         {/* <input type="number" placeholder="price from" min="0" step="50"/>
                         <input type="number" placeholder="price till" min="150" step="50"/> */}
-                        <input type="range" placeholder="price from" min="0" max="1500" step="50" name="minrange"/>
-                        <input type="range" placeholder="price till" min="150" max={1500} step="50"/>
+                        <input type="text" placeholder="price from" min="0" max="1500" step="50" name="minrange"/>
+                        <input type="text" placeholder="price till" min="150" max={1500} step="50"/>
 
                         <button>submit</button>
                     </form>

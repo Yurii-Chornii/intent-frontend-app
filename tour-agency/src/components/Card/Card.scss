@@ -27,13 +27,20 @@
     margin: 0;
   }
   &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     p{
       padding: 0 20px;
-      text-align: end;
+      // text-align: end;
       font-size: 16pt;
       margin-left: 20px;
     }
   }
+}
+
+button{
+  margin-left: 10px;
 }
 
 @media (max-width: 767px){
