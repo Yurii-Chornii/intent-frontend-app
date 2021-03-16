@@ -26,7 +26,7 @@ const SignIn = observer(() => {
 
                     }}>
                         <input type="text" placeholder="login"/>
-                        <input type="text" placeholder="password"/>
+                        <input type="password" placeholder="password"/>
                         <button>sign up</button>
                         <p>
                             Already have an account?
@@ -50,7 +50,7 @@ const SignIn = observer(() => {
 
                     }}>
                         <input type="text" placeholder="login"/>
-                        <input type="text" placeholder="password"/>
+                        <input type="password" placeholder="password"/>
                         <button>sign in</button>
                         <p>
                             Don't have an account?
@@ -67,6 +67,7 @@ const SignIn = observer(() => {
                         Users.setIsSignedIn(false);
                         Users.setSignInPageView("SignIn");
                     }}>log out</button>
+                    <button onClick={()=> history.push("/tours")}>tours list</button>
                 </section>
             )}
 

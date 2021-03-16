@@ -3,17 +3,23 @@ import {observer} from "mobx-react-lite";
 import data from "../../store/Data"
 import Card from "../Card/Card";
 import "./ToursList.scss"
+import Users from "../../store/Users";
+import {useHistory} from "react-router-dom";
 
 const ToursList = observer(() => {
     const [showSortParams, setShowSortParams] = useState(false);
     const {currentPage, countOfPages} = data;
-
+    const history = useHistory();
 
     useEffect(() => {
         if (data.tours.length === 0) {
             data.fetchTours();
         }
     }, [])
+
+    useEffect(() => {
+        if (!Users.loginedUser) history.push("/");
+    }, [history])
 
     const showParamsHandler = (e: any): void => {
         if (!showSortParams) {
@@ -104,11 +110,20 @@ const ToursList = observer(() => {
         {currentPage > 1 && <i className="fas fa-caret-left" onClick={() => data.decrementPage()}/>}
         {`${currentPage} of ${countOfPages}`}
         {currentPage < countOfPages && <i className="fas fa-caret-right" onClick={() => data.incrementPage()}/>}
-        {currentPage < (countOfPages - 1) && <i className="fas fa-step-forward" onClick={() => data.setCurrentPage(countOfPages)}/>}
+        {currentPage < (countOfPages - 1) &&
+        <i className="fas fa-step-forward" onClick={() => data.setCurrentPage(countOfPages)}/>}
     </div>
 
     return (
         <div>
+            {
+                Users.loginedUser && (
+                    <header className="logined-user-box">
+                        <span onClick={() => history.push("/")}>
+                            <i className="far fa-user"/> {Users.loginedUser.login}
+                        </span>
+                    </header>)
+            }
             <div className="cads-box">
                 <div className="sort-and-filter-box">
                     <div className="sort-and-filter-box__menu">
