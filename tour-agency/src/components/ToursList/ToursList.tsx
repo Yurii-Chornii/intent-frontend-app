@@ -21,6 +21,10 @@ const ToursList = observer(() => {
         if (!Users.loginedUser) history.push("/");
     }, [history])
 
+    // const cartbox = <div>
+    //     {Users.LoginedUserCartTours.map(item => <div key={item.id}>{item.title} <p>{item.price}</p></div>)}
+    // </div>
+
     const showParamsHandler = (e: any): void => {
         if (!showSortParams) {
             setShowSortParams(true);
@@ -116,14 +120,24 @@ const ToursList = observer(() => {
 
     return (
         <div>
-            {
-                Users.loginedUser && (
-                    <header className="logined-user-box">
-                        <span onClick={() => history.push("/")}>
-                            <i className="far fa-user"/> {Users.loginedUser.login}
-                        </span>
-                    </header>)
-            }
+
+            <header className="logined-user-box">
+                <div>
+                    {
+                        Users.loginedUser && (
+                            <span onClick={() => history.push("/")}>
+                                <i className="far fa-user"/> {Users.loginedUser.login}
+                            </span>
+                        )
+                    }
+                </div>
+                <div>
+                    <span onClick={() => history.push("/cart")}>
+                        Your cart -
+                        <i className="fas fa-shopping-cart"/>
+                    </span>
+                </div>
+            </header>
             <div className="cads-box">
                 <div className="sort-and-filter-box">
                     <div className="sort-and-filter-box__menu">
@@ -139,6 +153,9 @@ const ToursList = observer(() => {
                     </>
                 )}
             </div>
+            {/*{*/}
+            {/*    Users.loginedUser && Users.loginedUser.cart.length > 0 && cartbox*/}
+            {/*}*/}
             {
                 countOfPages > 1 && pagination
             }

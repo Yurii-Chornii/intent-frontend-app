@@ -1,5 +1,7 @@
 import {makeAutoObservable} from "mobx";
 import {IUser} from "../interfaces/IUser";
+import {ITour} from "../interfaces/ITour";
+import Data from "./Data";
 
 class Users {
     users: IUser[] = [
@@ -66,6 +68,56 @@ class Users {
         return true;
     }
 
+    get LoginedUserCartTours() {
+        const cartTours: ITour[] = [];
+        if (this.loginedUser){
+            if (this.loginedUser.cart.length > 0){
+                this.loginedUser.cart.forEach(value => {
+                    const foundedTour = Data.allToursReadonly.find(item => item.id === value);
+                    if (foundedTour) cartTours.push(foundedTour)
+                })
+            }
+        }
+        return cartTours
+    }
+
+    addNewItemToUserCart(id: number): void{
+        if (this.loginedUser){
+            // this.loginedUser?.cart.push(id);
+            this.users = this.users.map(user => {
+                if (user.id === this.loginedUser?.id){
+                    user.cart.push(id)
+                }
+                return user
+            })
+        }
+    }
+
+    deleteItemFromCart(id: number): void{
+        this.users = this.users.map(user => {
+            if (user.id === this.loginedUser?.id){
+                user.cart = user.cart.filter(item => item !== id)
+            }
+            return user
+        })
+    }
+
+    clearCart(): void{
+        this.users = this.users.map(user => {
+            if (user.id === this.loginedUser?.id){
+                user.cart = []
+            }
+            return user
+        })
+    }
+    // get totalCartPrice() {
+    //     let totalPrice = 0;
+    //     const itemsInCart = this.LoginedUserCartTours;
+    //     for (let item of itemsInCart){
+    //         totalPrice += +item.price
+    //     }
+    //     return totalPrice;
+    // }
 }
 
 export default new Users();

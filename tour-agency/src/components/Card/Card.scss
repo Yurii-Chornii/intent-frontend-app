@@ -27,6 +27,17 @@
     margin: 0;
   }
   &__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    i{
+      font-size: 20px;
+      &:hover{
+        cursor: pointer;
+        color: green;
+      }
+    }
     p{
       padding: 0 10px;
       text-align: end;
