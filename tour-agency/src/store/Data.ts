@@ -368,6 +368,7 @@ const fetchTours = (success: boolean, timeout: number): Promise<Array<ITour>> =>
 
 
 class Data {
+    allToursReadonly: ITour[] = [];
     tours: ITour[] = [];
     currentPage: number = 1;
     countCardsOnPage: number = 9;
@@ -472,6 +473,13 @@ class Data {
                 if (this.sortedStatus) this.sort(this.sortedStatus);
             })
             .catch(e => console.log(e))
+    }
+    setAllToursReadonly = async () => {
+        try {
+            this.allToursReadonly = await fetchTours(true, 30);
+        }catch (e){
+            console.log(e)
+        }
     }
 
 }

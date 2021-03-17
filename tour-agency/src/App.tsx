@@ -4,6 +4,9 @@ import {IRoute} from "./interfaces/IRoute";
 import ToursList from "./components/ToursList/ToursList";
 import Tour from "./components/Tour/Tour";
 import "./App.scss";
+import {useEffect} from "react";
+import Data from "./store/Data";
+import Cart from "./components/Cart/Cart";
 
 const routes: IRoute[] = [
     {
@@ -22,11 +25,19 @@ const routes: IRoute[] = [
         id: 3,
         path: "/tours/:id",
         component: <Tour/>
+    },
+    {
+        id: 4,
+        path: "/cart",
+        component: <Cart/>
     }
 ];
 
 
 const App = () => {
+    useEffect(() => {
+        Data.setAllToursReadonly();
+    }, [])
 
     return (
         <div>

@@ -1,9 +1,9 @@
 import {Link, useParams} from "react-router-dom";
 import data from "../../store/Data"
 import {observer} from "mobx-react-lite";
-import {useEffect} from "react";
+import {useEffect, useState} from "react";
 import "./Tour.scss"
-import {log} from "util";
+import Users from "../../store/Users";
 
 
 interface IParams {
@@ -11,7 +11,9 @@ interface IParams {
 }
 
 const Tour = observer(() => {
+    const [isInCart, setIsInCart] = useState(false);
     const params = useParams<IParams>();
+
     useEffect(() => {
         data.findAndSetCurrentTour(+params.id);
 
@@ -19,6 +21,12 @@ const Tour = observer(() => {
             data.setCurrentTour(undefined);
         }
     }, [params]);
+
+    useEffect(() => {
+        if (Users.loginedUser?.cart.findIndex(value => value === +params.id) !== -1) {
+            setIsInCart(true)
+        }
+    }, [params.id])
 
     return (
         <div>
@@ -41,7 +49,16 @@ const Tour = observer(() => {
                         </section>
                         <footer className="tour__footer">
                             <div>
-                                {true && <button className="tour-page-button">add to cart</button>}
+                                {!isInCart ? <button className="tour-page-button" onClick={() => {
+                                    Users.addNewItemToUserCart(+params.id);
+                                    setIsInCart(true);
+                                }}>add to cart</button>
+                                :
+                                    <button className="tour-page-button" onClick={() => {
+                                        Users.deleteItemFromCart(+params.id);
+                                        setIsInCart(false);
+                                    }}>remove from cart</button>
+                                }
                             </div>
                             <b>{data.currentTour.price}</b>
                         </footer>
