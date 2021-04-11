@@ -42,7 +42,7 @@ class Users {
     signIn(login: string, password: string): boolean {
         const foundUser = this.users.find(value => value.login === login);
         if (foundUser) {
-            if (foundUser.login === login) {
+            if (foundUser.login === login && foundUser.password === password) {
                 this.setIsSignedIn(true);
                 this.setLoginedUser(foundUser);
                 this.setSignInPageView("Logined");

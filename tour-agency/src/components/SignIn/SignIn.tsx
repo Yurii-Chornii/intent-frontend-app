@@ -1,17 +1,25 @@
-import React, {useState} from "react";
+import React, {useRef, useState} from "react";
 import {observer} from "mobx-react-lite";
 import {useHistory} from "react-router-dom";
 import Users from "../../store/Users";
 import "./SignIn.scss";
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
-import {Col} from "react-bootstrap";
+import {Col, Modal} from "react-bootstrap";
 
 const SignIn = observer(() => {
     const history = useHistory();
 
     const [signInFormValidated, setSignInFormValidated] = useState(false);
     const [signUpFormValidated, setSignUpFormValidated] = useState(false);
+    const [show, setShow] = useState(false);
+    const [modalHeader, setModalHeader] = useState("");
+    const [modalBody, setModalbody] = useState("");
+
+    const modalRef = useRef(null)
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     const handleSignInForm = (event: any) => {
         const signInForm = event.currentTarget;
@@ -21,12 +29,18 @@ const SignIn = observer(() => {
             const login = signInForm.login.value;
             const password = signInForm.password.value;
             const success = Users.signIn(login, password);
-            if (!success) alert("Something went wrong")
+            if (!success) showModal("Something went wrong", "Are you sure you have an account?")
             else history.push("/tours")
 
         }
         setSignInFormValidated(true);
     };
+
+    const showModal = (headerText: string, bodyText: string): void => {
+        setModalHeader(headerText);
+        setModalbody(bodyText)
+        handleShow();
+    }
 
     const handleSignUpForm = (event: any) => {
         const signUpForm = event.currentTarget;
@@ -36,16 +50,29 @@ const SignIn = observer(() => {
             const login = signUpForm.login.value;
             const password = signUpForm.password.value;
             const success = Users.signUp(login, password);
-            if (!success) alert("This login is occupated")
-
+            if (!success) showModal("This login is occupated!", "Try another login.")
         }
         setSignUpFormValidated(true);
     };
+
+    const modal = <Modal ref={modalRef} show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+            <Modal.Title>{modalHeader}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalBody}</Modal.Body>
+        <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+                Close
+            </Button>
+        </Modal.Footer>
+    </Modal>
+
 
     return (
         <div className="signIn">
             <header className="signIn__header mb-3">
                 <h2>{Users.signInPageView}</h2>
+                {modal}
             </header>
             {Users.signInPageView === "SignUp" && (
                 <section>
@@ -55,10 +82,10 @@ const SignIn = observer(() => {
                                 <Form.Label>Login</Form.Label>
                                 <Form.Control
                                     required
-                                    name = "login"
+                                    name="login"
                                     type="text"
                                     placeholder="Login"
-                                    pattern = "^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+                                    pattern="^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
                                 />
                                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                                 <Form.Control.Feedback type="invalid">
@@ -70,9 +97,9 @@ const SignIn = observer(() => {
                                 <Form.Control
                                     required
                                     type="password"
-                                    name = "password"
+                                    name="password"
                                     placeholder="Password"
-                                    pattern = "^.{4,20}$"
+                                    pattern="^.{4,20}$"
                                 />
                                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                                 <Form.Control.Feedback type="invalid">
@@ -97,10 +124,10 @@ const SignIn = observer(() => {
                                 <Form.Label>Login</Form.Label>
                                 <Form.Control
                                     required
-                                    name = "login"
+                                    name="login"
                                     type="text"
                                     placeholder="Login"
-                                    pattern = "^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+                                    pattern="^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
                                 />
                                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                                 <Form.Control.Feedback type="invalid">
@@ -112,9 +139,9 @@ const SignIn = observer(() => {
                                 <Form.Control
                                     required
                                     type="password"
-                                    name = "password"
+                                    name="password"
                                     placeholder="Password"
-                                    pattern = "^.{4,20}$"
+                                    pattern="^.{4,20}$"
                                 />
                                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                                 <Form.Control.Feedback type="invalid">
@@ -138,7 +165,8 @@ const SignIn = observer(() => {
                         Users.setIsSignedIn(false);
                         Users.setSignInPageView("SignIn");
                     }}>Log out</Button>
-                    <Button className="ml-2" variant="success" onClick={()=> history.push("/tours")}>Tours list</Button>
+                    <Button className="ml-2" variant="success" onClick={() => history.push("/tours")}>Tours
+                        list</Button>
                 </section>
             )}
 
