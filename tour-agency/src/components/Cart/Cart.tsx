@@ -20,7 +20,7 @@ const Cart = observer(() => {
     return (
         <div>
             <Link to="/tours">
-                <button className="tour-page-button">back to list</button>
+                <button className="btn btn-success">back to list</button>
             </Link>
             <div className="cart">
                 <header className="cart__header">
@@ -42,10 +42,10 @@ const Cart = observer(() => {
                         <div>
                             <p className="cart__footer__clear-cart" onClick={() => {Users.clearCart()}}>clear cart</p>
                             <p>Total price: {total}$</p>
-                            <button className="tour-page-button" onClick={()=> {
+                            <button className="btn btn-success" onClick={()=> {
                                 alert("Thank you for your order! Have a nice day!");
                                 Users.clearCart();
-                            }}>Buy</button>
+                            }}>Buy tours</button>
                         </div>
                     </footer>
                 }

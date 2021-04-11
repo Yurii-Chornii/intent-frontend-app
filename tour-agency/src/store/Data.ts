@@ -379,7 +379,6 @@ class Data {
 
     constructor() {
         makeAutoObservable(this);
-        //ця штука ставить всі анотації за нас
     }
 
     setTours(tours: ITour[]): void {

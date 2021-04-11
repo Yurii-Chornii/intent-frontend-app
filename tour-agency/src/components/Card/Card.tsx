@@ -31,7 +31,6 @@ export default function Card(props: ICardProps) {
                     description.slice(0, description.indexOf(".") < 100 ? description.indexOf(".") + 1 : 100) + "..."
                 }</p>
             </div>
-            {/*<button onClick={() => Users.addNewItemToUserCart(id)}>add to cart</button>*/}
             <div className="card__footer">
                 {
                     !isInCart ?

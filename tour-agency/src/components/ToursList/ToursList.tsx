@@ -21,9 +21,6 @@ const ToursList = observer(() => {
         if (!Users.loginedUser) history.push("/");
     }, [history])
 
-    // const cartbox = <div>
-    //     {Users.LoginedUserCartTours.map(item => <div key={item.id}>{item.title} <p>{item.price}</p></div>)}
-    // </div>
 
     const showParamsHandler = (e: any): void => {
         if (!showSortParams) {
@@ -153,9 +150,6 @@ const ToursList = observer(() => {
                     </>
                 )}
             </div>
-            {/*{*/}
-            {/*    Users.loginedUser && Users.loginedUser.cart.length > 0 && cartbox*/}
-            {/*}*/}
             {
                 countOfPages > 1 && pagination
             }
