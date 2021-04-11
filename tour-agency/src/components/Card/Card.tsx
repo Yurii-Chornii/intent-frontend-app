@@ -3,6 +3,7 @@ import {ITour} from "../../interfaces/ITour";
 import "./Card.scss"
 import Users from "../../store/Users";
 import {useEffect, useState} from "react";
+import Alert from 'react-bootstrap/Alert'
 
 
 interface ICardProps {
@@ -34,12 +35,16 @@ export default function Card(props: ICardProps) {
             <div className="card__footer">
                 {
                     !isInCart ?
-                        <i className="fas fa-cart-plus" onClick={() => {
-                            Users.addNewItemToUserCart(id);
-                            setIsInCart(true);
-                        }}/>
+                        <Alert variant="secondary">
+                            <i className="fas fa-cart-plus" onClick={() => {
+                                Users.addNewItemToUserCart(id);
+                                setIsInCart(true);
+                            }}/>
+                        </Alert>
                         :
-                        <span>In cart</span>
+                        <Alert variant="success">
+                            In cart
+                        </Alert>
                 }
 
                 <p>{price}</p>

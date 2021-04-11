@@ -29,7 +29,7 @@ const SignIn = observer(() => {
             const login = signInForm.login.value;
             const password = signInForm.password.value;
             const success = Users.signIn(login, password);
-            if (!success) showModal("Something went wrong", "Are you sure you have an account?")
+            if (!success) showModal("Something went wrong", "Please check your login and password!")
             else history.push("/tours")
 
         }

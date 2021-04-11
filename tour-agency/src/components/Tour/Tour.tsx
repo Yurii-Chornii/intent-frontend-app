@@ -31,7 +31,7 @@ const Tour = observer(() => {
     return (
         <div>
             <Link to="/tours">
-                <button className="tour-page-button">back to list</button>
+                <button className="btn btn-success">back to list</button>
             </Link>
             {
                 data.currentTour ? (
@@ -49,12 +49,12 @@ const Tour = observer(() => {
                         </section>
                         <footer className="tour__footer">
                             <div>
-                                {!isInCart ? <button className="tour-page-button" onClick={() => {
+                                {!isInCart ? <button className="btn btn-success" onClick={() => {
                                     Users.addNewItemToUserCart(+params.id);
                                     setIsInCart(true);
                                 }}>add to cart</button>
                                 :
-                                    <button className="tour-page-button" onClick={() => {
+                                    <button className="btn btn-success" onClick={() => {
                                         Users.deleteItemFromCart(+params.id);
                                         setIsInCart(false);
                                     }}>remove from cart</button>
