@@ -14,11 +14,11 @@ export default function Card(props: ICardProps) {
     const [isInCart, setIsInCart] = useState(false);
     const {pathname} = useLocation();
     const {tour: {imageUrl, price, title, description, id}} = props;
-    useEffect(() => {
-        if (Users.loginedUser?.cart.findIndex(value => value === id) !== -1) {
-            setIsInCart(true)
-        }
-    }, [id])
+    // useEffect(() => {
+    //     if (Users.loginedUser?.cart.findIndex(value => value === id) !== -1) {
+    //         setIsInCart(true)
+    //     }
+    // }, [id])
     return (
         <div className="card noselect">
             <div>

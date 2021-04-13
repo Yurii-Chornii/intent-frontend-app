@@ -18,7 +18,7 @@ const ToursList = observer(() => {
     }, [])
 
     useEffect(() => {
-        if (!Users.loginedUser) history.push("/");
+        if (!Users.loginedUserDB) history.push("/");
     }, [history])
 
 
@@ -121,9 +121,9 @@ const ToursList = observer(() => {
             <header className="logined-user-box">
                 <div>
                     {
-                        Users.loginedUser && (
+                        Users.loginedUserDB && (
                             <span onClick={() => history.push("/")}>
-                                <i className="far fa-user"/> {Users.loginedUser.login}
+                                <i className="far fa-user"/> {Users.loginedUserDB.userName}
                             </span>
                         )
                     }

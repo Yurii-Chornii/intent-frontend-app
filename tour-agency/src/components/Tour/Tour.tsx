@@ -5,7 +5,6 @@ import {useEffect, useState} from "react";
 import "./Tour.scss"
 import Users from "../../store/Users";
 
-
 interface IParams {
     id: string
 }

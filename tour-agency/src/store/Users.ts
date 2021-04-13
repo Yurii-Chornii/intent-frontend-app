@@ -1,7 +1,10 @@
-import {makeAutoObservable} from "mobx";
+import {makeAutoObservable, remove} from "mobx";
 import {IUser} from "../interfaces/IUser";
 import {ITour} from "../interfaces/ITour";
 import Data from "./Data";
+import {IUserDB} from "../interfaces/IUserDB";
+import {IDBError} from "../interfaces/IDBError";
+import * as mobx from "mobx";
 
 class Users {
     users: IUser[] = [
@@ -19,59 +22,90 @@ class Users {
         }
     ];
     signInPageView: string = "SignUp";
-    isSignedIn: boolean = false;
+    // isSignedIn: boolean = false;
     loginedUser: IUser | undefined = undefined;
+    loginedUserDB: IUserDB | undefined = undefined;
 
     constructor() {
         makeAutoObservable(this);
     }
 
+    //backEnd
+    // signUp = (user: IUserDB) => {
+    //     this.setLoginedUserDB(user);
+    //     this.setSignInPageView("Logined");
+    //     console.log("this.loginedUser - ", mobx.toJS(this.loginedUserDB))
+    // }
+
+    signIn = (user: IUserDB) => {
+        this.setLoginedUserDB(user);
+        this.setSignInPageView("Logined");
+        // console.log("this.loginedUser - ", mobx.toJS(this.loginedUserDB))
+        this.saveUserToLocalstorage(user);
+    }
+    //backEnd
+
+    saveUserToLocalstorage = (user: IUserDB): void => {
+        localStorage.setItem("loginedUser", JSON.stringify(user))
+    }
+
+    deleteUserFromLocalstorage = (): void => {
+        localStorage.removeItem("loginedUser")
+    }
+
+    //sign in
+    // signIn(login: string, password: string): boolean {
+    //     const foundUser = this.users.find(value => value.login === login);
+    //     if (foundUser) {
+    //         if (foundUser.login === login && foundUser.password === password) {
+    //             this.setIsSignedIn(true);
+    //             this.setLoginedUser(foundUser);
+    //             this.setSignInPageView("Logined");
+    //             return true;
+    //         }
+    //     }
+    //     return false
+    // }
+
     setSignInPageView(newView: string): void {
         this.signInPageView = newView;
     }
 
-    setIsSignedIn(status: boolean): void {
-        this.isSignedIn = status;
-    }
+    // setIsSignedIn(status: boolean): void {
+    //     this.isSignedIn = status;
+    // }
 
     setLoginedUser(user: IUser | undefined): void {
         this.loginedUser = user;
     }
 
-    //sign in
-    signIn(login: string, password: string): boolean {
-        const foundUser = this.users.find(value => value.login === login);
-        if (foundUser) {
-            if (foundUser.login === login && foundUser.password === password) {
-                this.setIsSignedIn(true);
-                this.setLoginedUser(foundUser);
-                this.setSignInPageView("Logined");
-                return true;
-            }
-        }
-        return false
+    setLoginedUserDB(user: any): void {
+        this.loginedUserDB = user;
     }
 
+    clearLoginedUserDb(): void {
+        this.loginedUserDB = undefined;
+    }
 
     //sign up
-    signUp(login: string, password: string): boolean {
-        const foundUser = this.users.find(value => value.login === login);
-        if(foundUser) return false;
-        const newUser: IUser = {
-            id: new Date().getTime(),
-            login,
-            password,
-            cart: []
-        }
-        this.users.push(newUser);
-        this.setSignInPageView("SignIn");
-        return true;
-    }
+    // signUp(login: string, password: string): boolean {
+    //     const foundUser = this.users.find(value => value.login === login);
+    //     if(foundUser) return false;
+    //     const newUser: IUser = {
+    //         id: new Date().getTime(),
+    //         login,
+    //         password,
+    //         cart: []
+    //     }
+    //     this.users.push(newUser);
+    //     this.setSignInPageView("SignIn");
+    //     return true;
+    // }
 
     get LoginedUserCartTours() {
         const cartTours: ITour[] = [];
-        if (this.loginedUser){
-            if (this.loginedUser.cart.length > 0){
+        if (this.loginedUser) {
+            if (this.loginedUser.cart.length > 0) {
                 this.loginedUser.cart.forEach(value => {
                     const foundedTour = Data.allToursReadonly.find(item => item.id === value);
                     if (foundedTour) cartTours.push(foundedTour)
@@ -81,11 +115,11 @@ class Users {
         return cartTours
     }
 
-    addNewItemToUserCart(id: number): void{
-        if (this.loginedUser){
+    addNewItemToUserCart(id: number): void {
+        if (this.loginedUser) {
             // this.loginedUser?.cart.push(id);
             this.users = this.users.map(user => {
-                if (user.id === this.loginedUser?.id){
+                if (user.id === this.loginedUser?.id) {
                     user.cart.push(id)
                 }
                 return user
@@ -93,23 +127,24 @@ class Users {
         }
     }
 
-    deleteItemFromCart(id: number): void{
+    deleteItemFromCart(id: number): void {
         this.users = this.users.map(user => {
-            if (user.id === this.loginedUser?.id){
+            if (user.id === this.loginedUser?.id) {
                 user.cart = user.cart.filter(item => item !== id)
             }
             return user
         })
     }
 
-    clearCart(): void{
+    clearCart(): void {
         this.users = this.users.map(user => {
-            if (user.id === this.loginedUser?.id){
+            if (user.id === this.loginedUser?.id) {
                 user.cart = []
             }
             return user
         })
     }
+
     // get totalCartPrice() {
     //     let totalPrice = 0;
     //     const itemsInCart = this.LoginedUserCartTours;

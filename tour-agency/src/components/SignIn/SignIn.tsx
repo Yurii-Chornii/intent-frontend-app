@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {observer} from "mobx-react-lite";
 import {useHistory} from "react-router-dom";
 import Users from "../../store/Users";
@@ -6,6 +6,7 @@ import "./SignIn.scss";
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import {Col, Modal} from "react-bootstrap";
+import {IUserDB} from "../../interfaces/IUserDB";
 
 const SignIn = observer(() => {
     const history = useHistory();
@@ -21,17 +22,45 @@ const SignIn = observer(() => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
-    const handleSignInForm = (event: any) => {
+    useEffect(() => {
+        let loginedUser = localStorage.getItem("loginedUser");
+        if(loginedUser !== null){
+            loginedUser = JSON.parse(loginedUser);
+            Users.setLoginedUserDB(loginedUser);
+            Users.setSignInPageView("Logined")
+        }
+    }, [])
+
+    const handleSignInForm = async (event: any) => {
         const signInForm = event.currentTarget;
         event.preventDefault();
         event.stopPropagation();
         if (signInForm.checkValidity() === true) {
             const login = signInForm.login.value;
             const password = signInForm.password.value;
-            const success = Users.signIn(login, password);
-            if (!success) showModal("Something went wrong", "Please check your login and password!")
-            else history.push("/tours")
+            const foundUser = await fetch('http://localhost:8765/api/users/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    userName: login,
+                    password: password
+                })
+            }).then(value => value.json())
+                .then(value => value)
+                .catch(e => console.error(e))
 
+            if (foundUser !== undefined && "message" in foundUser && foundUser.message){
+                showModal("Warning", foundUser.message)
+            }else if(foundUser === undefined){
+                showModal("Warning", "Try again")
+            }else {
+                Users.signIn(foundUser);
+            }
+            // const success = Users.signIn(login, password);
+            // if (!success) showModal("Something went wrong", "Please check your login and password!")
+            // else history.push("/tours")
         }
         setSignInFormValidated(true);
     };
@@ -42,15 +71,34 @@ const SignIn = observer(() => {
         handleShow();
     }
 
-    const handleSignUpForm = (event: any) => {
+    const handleSignUpForm = async (event: any) => {
         const signUpForm = event.currentTarget;
         event.preventDefault();
         event.stopPropagation();
         if (signUpForm.checkValidity() === true) {
             const login = signUpForm.login.value;
             const password = signUpForm.password.value;
-            const success = Users.signUp(login, password);
-            if (!success) showModal("This login is occupated!", "Try another login.")
+
+            const foundUser = await fetch('http://localhost:8765/api/users/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    userName: login,
+                    password: password
+                })
+            }).then(value => value.json())
+                .then(value => value)
+                .catch(e => console.error(e))
+
+            if (foundUser !== undefined && "message" in foundUser && foundUser.message){
+                showModal("Warning", foundUser.message)
+            }else if(foundUser === undefined){
+                Users.setSignInPageView("SignIn")
+            }else {
+                Users.signIn(foundUser);
+            }
         }
         setSignUpFormValidated(true);
     };
@@ -67,12 +115,36 @@ const SignIn = observer(() => {
         </Modal.Footer>
     </Modal>
 
+    // //todo
+    // const getData = async () => {
+    //     await fetch("http://localhost:8765/api/tours/?page=1&size=9").then(value => value.json()).then(value => console.log(value))
+    // }
+
+    const logOut = async () => {
+        await fetch(`http://localhost:8765/api/users/signout?userid=${Users.loginedUserDB?.id}`)
+            .then(value => value.json())
+            .then(value => {
+                console.log(value)
+
+            })
+            .catch(e => console.log(e))
+        Users.clearLoginedUserDb();
+        Users.setSignInPageView("SignIn");
+        Users.deleteUserFromLocalstorage();
+    }
 
     return (
         <div className="signIn">
             <header className="signIn__header mb-3">
                 <h2>{Users.signInPageView}</h2>
                 {modal}
+
+
+                {/*<button onClick={() => {*/}
+                {/*    getData()*/}
+                {/*}}>test</button>*/}
+
+
             </header>
             {Users.signInPageView === "SignUp" && (
                 <section>
@@ -159,11 +231,9 @@ const SignIn = observer(() => {
             )}
             {Users.signInPageView === "Logined" && (
                 <section>
-                    <p>You are logined as <b>{Users.loginedUser?.login}</b></p>
+                    <p>You are logined as <b>{Users.loginedUserDB?.userName}</b></p>
                     <Button variant="danger" onClick={() => {
-                        Users.setLoginedUser(undefined);
-                        Users.setIsSignedIn(false);
-                        Users.setSignInPageView("SignIn");
+                        logOut();
                     }}>Log out</Button>
                     <Button className="ml-2" variant="success" onClick={() => history.push("/tours")}>Tours
                         list</Button>
