@@ -64,7 +64,7 @@ const Cart = observer(() => {
     return (
         <div>
             <Link to="/tours">
-                <button className="btn btn-success">back to list</button>
+                <button className="btn btn-success m-3">back to list</button>
             </Link>
             <div className="cart">
                 <header className="cart__header">
@@ -92,7 +92,7 @@ const Cart = observer(() => {
                                 Users.cleanCart()
                             }}>clean cart</p>
                             <p>Total price: {totalPrice}$</p>
-                            <p>Balance: {Users.userBalance}</p>
+                            <p>Balance: {Users.userBalance}$</p>
                             <button className="btn btn-success" onClick={() => {
                                 buyAllTours()
                             }}>Buy tours
@@ -100,10 +100,8 @@ const Cart = observer(() => {
                         </div>
                     </footer>
                 }
-
             </div>
         </div>
-
     );
 })
 

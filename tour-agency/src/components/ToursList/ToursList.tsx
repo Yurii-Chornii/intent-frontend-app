@@ -4,14 +4,13 @@ import data from "../../store/Data"
 import Card from "../Card/Card";
 import Users from "../../store/Users";
 import {useHistory} from "react-router-dom";
-import {Col, Form, Modal, Row} from "react-bootstrap";
+import {Form, Modal} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import "./ToursList.scss"
 
 const ToursList = observer(() => {
     const history = useHistory();
     const {minPrice, maxPrice, pageNumber, pageSize, sortOrder} = data;
-    // const [showSortParams, setShowSortParams] = useState(false);
     const [show, setShow] = useState(false);
     const [modalHeader, setModalHeader] = useState("");
     const [modalBody, setModalbody] = useState("");
@@ -55,17 +54,6 @@ const ToursList = observer(() => {
         Users.getUserCartItems();
     }, [Users.loginedUserDB, Users.userCartItemsIds])
 
-
-    // const showParamsHandler = (e: any): void => {
-    //     if (!showSortParams) {
-    //         setShowSortParams(true);
-    //         e.target.classList.add("opened-params");
-    //     } else {
-    //         setShowSortParams(false);
-    //         e.target.classList.remove("opened-params");
-    //     }
-    // }
-
     const paramsFormHandler = (e: any): void => {
         e.preventDefault();
         const from = +e.target[0].value;
@@ -90,8 +78,8 @@ const ToursList = observer(() => {
 
     const params = <div className="params">
         <div>
-            <Form inline className="mt-1">
-                        <Form.Label>Count tours on the page:</Form.Label>
+            <Form inline className="m-1">
+                <Form.Label>Count tours on the page:</Form.Label>
                 <Form.Control
                     as="select"
                     className="mr-sm-2 ml-2"
@@ -108,36 +96,26 @@ const ToursList = observer(() => {
                     <option value="9">9</option>
                     <option value="12">12</option>
                 </Form.Control>
-                <i className="fas fa-sort-numeric-down" style={{"color": data.sortOrder === "price,asc" ? "green" : ""}}
+                <i className="fas fa-sort-numeric-down m-1" style={{"color": data.sortOrder === "price,asc" ? "green" : ""}}
                    onClick={() => sortHandler("price,asc")}/>
-                <i className="fas fa-sort-numeric-down-alt"
+                <i className="fas fa-sort-numeric-down-alt m-1"
                    style={{"color": data.sortOrder === "price,desc" ? "green" : ""}}
                    onClick={() => sortHandler("price,desc")}/>
             </Form>
-            {/*<select defaultValue={data.pageSize} name="countToursOnPage" id="countToursOnPage"*/}
-            {/*        onChange={(e) => {*/}
-            {/*            data.setPageSize(+e.target.value);*/}
-            {/*            data.setPage(1);*/}
-            {/*        }}>*/}
-            {/*    <option value="3">3</option>*/}
-            {/*    <option value="6">6</option>*/}
-            {/*    <option value="9">9</option>*/}
-            {/*    <option value="12">12</option>*/}
-            {/*</select>*/}
         </div>
         <div>
-            <form onSubmit={paramsFormHandler}>
-                <input type="number" placeholder={"price from " + data.minPrice} min="0" step="100"/>
-                <input type="number" placeholder={"price till " + data.maxPrice} min="100" step="100"/>
-                <button type="submit">submit</button>
+            <Form inline className="m-1" onSubmit={paramsFormHandler}>
+                <Form.Control type="number" placeholder={"price from " + data.minPrice} min="0" step="100"/>
+                <Form.Control type="number" placeholder={"price till " + data.maxPrice} min="0" step="100"/>
+                <button type="submit" className="btn btn-success ml-1">Filter</button>
                 <button type="reset" onClick={() => {
                     data.setMinPrice(0);
                     data.setMaxPrice(5000);
                     data.setPage(1)
-                }}>
-                    clear
+                }} className="btn btn-outline-dark ml-1">
+                    Clear
                 </button>
-            </form>
+            </Form>
         </div>
     </div>
 
@@ -195,7 +173,6 @@ const ToursList = observer(() => {
                     <>
                         <div className="sort-and-filter-box">
                             <div className="sort-and-filter-box__menu">
-                                {/*<i className="fas fa-chevron-left arrow" onClick={(e) => showParamsHandler(e)}/>*/}
                                 {params}
                             </div>
                         </div>

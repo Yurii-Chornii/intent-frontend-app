@@ -54,7 +54,7 @@ const Tour = observer(() => {
     return (
         <div>
             <Link to="/tours">
-                <button className="btn btn-success">back to list</button>
+                <button className="btn btn-success m-3">back to list</button>
             </Link>
             {
                 tour.title !== "" && tour.id !== 0 ? (
