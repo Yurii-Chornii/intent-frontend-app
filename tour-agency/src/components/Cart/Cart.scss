@@ -1,0 +1,22 @@
+.cart {
+  width: 90%;
+  max-width: 900px;
+  margin: auto;
+  padding: 0 20px;
+
+  &__footer {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+
+    &__clear-cart {
+      text-align: center;
+      color: red;
+
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+
+}

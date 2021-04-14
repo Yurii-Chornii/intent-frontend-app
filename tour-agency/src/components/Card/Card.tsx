@@ -1,15 +1,16 @@
 import {Link, useLocation} from "react-router-dom";
 import {ITour} from "../../interfaces/ITour";
 import "./Card.scss"
-
+import Users from "../../store/Users";
 
 interface ICardProps {
-    tour: ITour
+    tour: ITour,
 }
 
 export default function Card(props: ICardProps) {
     const {pathname} = useLocation();
     const {tour: {imageUrl, price, title, description, id}} = props;
+
     return (
         <div className="card noselect">
             <div>
@@ -24,7 +25,13 @@ export default function Card(props: ICardProps) {
                 }</p>
             </div>
             <div className="card__footer">
-                <p>{price}</p>
+                {
+                    !Users.isItemInCart(id) ?
+                        <button className="btn btn-success mb-3" onClick={() => Users.addToCart(id, price)}>Add to cart</button>
+                        :
+                        <button className="btn btn-dark mb-3" onClick={() => Users.removeFromCart(id)}>Remove from cart</button>
+                }
+                <p>{price}$</p>
             </div>
         </div>
 

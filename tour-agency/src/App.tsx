@@ -4,6 +4,7 @@ import {IRoute} from "./interfaces/IRoute";
 import ToursList from "./components/ToursList/ToursList";
 import Tour from "./components/Tour/Tour";
 import "./App.scss";
+import Cart from "./components/Cart/Cart";
 
 const routes: IRoute[] = [
     {
@@ -22,6 +23,11 @@ const routes: IRoute[] = [
         id: 3,
         path: "/tours/:id",
         component: <Tour/>
+    },
+    {
+        id: 4,
+        path: "/cart",
+        component: <Cart/>
     }
 ];
 
@@ -30,7 +36,6 @@ const App = () => {
 
     return (
         <div>
-           {/*router*/}
             <Switch>
                 {routes.map(el => (
                     <Route key={el.id} exact={el.exact || false} path={el.path}>
@@ -38,8 +43,6 @@ const App = () => {
                     </Route>
                 ))}
             </Switch>
-            {/*router*/}
-
         </div>
     );
 }
