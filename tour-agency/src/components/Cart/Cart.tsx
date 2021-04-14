@@ -1,21 +1,65 @@
-import "./Cart.scss"
 import {observer} from "mobx-react-lite";
-import {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import Users from "../../store/Users";
 import {Link, useHistory} from "react-router-dom";
 import CartItem from "../CartItem/CartItem";
+import {Modal} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import "./Cart.scss"
 
 const Cart = observer(() => {
+    const [show, setShow] = useState(false);
+    const [modalHeader, setModalHeader] = useState("");
+    const [modalBody, setModalbody] = useState("");
     const history = useHistory();
+    const [totalPrice, setTotalPrice] = useState(0);
     useEffect(() => {
-        if (!Users.loginedUser) history.push("/");
+        if (!Users.loginedUserDB) history.push("/");
     }, [history])
 
-    const toursInCart = Users.LoginedUserCartTours;
-    let total = 0;
-    for (let tour of toursInCart){
-        total += Number.parseInt(tour.price);
+    useEffect(() => {
+        Users.getLoginedUserCartTours();
+        const totalPrice = Users.userCartItemsFull.reduce((previousValue, currentValue) => {
+            return previousValue + currentValue.price
+        }, 0)
+        setTotalPrice(totalPrice);
+    }, [Users.userCartItemsFull, Users.userCartItemsIds])
+
+    const buyAllTours = async () => {
+        const response = await fetch('http://localhost:8765/api/users/cart/buy?userid=' + Users.loginedUserDB?.id)
+            .then(value => value.json())
+            .then(value => value)
+            .catch(e => console.error(e))
+        if ("message" in response && response.message) {
+            showModal("Ups...", response.message);
+        } else {
+            Users.setUserBalance(response.balance);
+            Users.setUserCartItemsIds(response.items)
+            Users.setUserCartItemsFull(response.items)
+            showModal("Congrats", "Have a nice rest!");
+        }
     }
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const showModal = (headerText: string, bodyText: string): void => {
+        setModalHeader(headerText);
+        setModalbody(bodyText)
+        handleShow();
+    }
+
+    const modal = <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+            <Modal.Title>{modalHeader}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalBody}</Modal.Body>
+        <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+                Close
+            </Button>
+        </Modal.Footer>
+    </Modal>
 
     return (
         <div>
@@ -25,11 +69,15 @@ const Cart = observer(() => {
             <div className="cart">
                 <header className="cart__header">
                     <h2>Cart</h2>
+                    {modal}
                 </header>
                 {
-                    Users.LoginedUserCartTours.length > 0 ?
+                    Users.userCartItemsFull.length > 0 ?
                         <section>
-                            {Users.LoginedUserCartTours.map(item => <CartItem key={item.id} id={item.id} title={item.title} description={item.description} price={item.price} imageUrl={item.imageUrl}/>)}
+                            {Users.userCartItemsFull.map(item => <CartItem key={item.id} id={item.id} title={item.title}
+                                                                           description={item.description}
+                                                                           price={item.price}
+                                                                           imageUrl={item.imageUrl}/>)}
                         </section>
                         :
                         <section>
@@ -37,15 +85,18 @@ const Cart = observer(() => {
                         </section>
                 }
                 {
-                    Users.LoginedUserCartTours.length > 0 &&
+                    Users.userCartItemsFull.length > 0 &&
                     <footer className="cart__footer">
                         <div>
-                            <p className="cart__footer__clear-cart" onClick={() => {Users.clearCart()}}>clear cart</p>
-                            <p>Total price: {total}$</p>
-                            <button className="btn btn-success" onClick={()=> {
-                                alert("Thank you for your order! Have a nice day!");
-                                Users.clearCart();
-                            }}>Buy tours</button>
+                            <p className="cart__footer__clear-cart" onClick={() => {
+                                Users.cleanCart()
+                            }}>clean cart</p>
+                            <p>Total price: {totalPrice}$</p>
+                            <p>Balance: {Users.userBalance}</p>
+                            <button className="btn btn-success" onClick={() => {
+                                buyAllTours()
+                            }}>Buy tours
+                            </button>
                         </div>
                     </footer>
                 }

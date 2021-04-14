@@ -1,4 +1,5 @@
 export interface IItemDB{
     tourId: number,
-    date: string
+    date: string,
+    price: number
 }

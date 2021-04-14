@@ -4,8 +4,8 @@ import {IRoute} from "./interfaces/IRoute";
 import ToursList from "./components/ToursList/ToursList";
 import Tour from "./components/Tour/Tour";
 import "./App.scss";
-import {useEffect} from "react";
-import Data from "./store/Data";
+// import {useEffect} from "react";
+// import Data from "./store/Data";
 import Cart from "./components/Cart/Cart";
 
 const routes: IRoute[] = [
@@ -35,9 +35,9 @@ const routes: IRoute[] = [
 
 
 const App = () => {
-    useEffect(() => {
-        Data.setAllToursReadonly();
-    }, [])
+    // useEffect(() => {
+    //     Data.setAllToursReadonly();
+    // }, [])
 
     return (
         <div>

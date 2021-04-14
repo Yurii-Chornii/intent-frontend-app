@@ -2,23 +2,15 @@ import {Link, useLocation} from "react-router-dom";
 import {ITour} from "../../interfaces/ITour";
 import "./Card.scss"
 import Users from "../../store/Users";
-import {useEffect, useState} from "react";
-import Alert from 'react-bootstrap/Alert'
-
 
 interface ICardProps {
-    tour: ITour
+    tour: ITour,
 }
 
 export default function Card(props: ICardProps) {
-    const [isInCart, setIsInCart] = useState(false);
     const {pathname} = useLocation();
     const {tour: {imageUrl, price, title, description, id}} = props;
-    // useEffect(() => {
-    //     if (Users.loginedUser?.cart.findIndex(value => value === id) !== -1) {
-    //         setIsInCart(true)
-    //     }
-    // }, [id])
+
     return (
         <div className="card noselect">
             <div>
@@ -34,19 +26,11 @@ export default function Card(props: ICardProps) {
             </div>
             <div className="card__footer">
                 {
-                    !isInCart ?
-                        <Alert variant="secondary">
-                            <i className="fas fa-cart-plus" onClick={() => {
-                                Users.addNewItemToUserCart(id);
-                                setIsInCart(true);
-                            }}/>
-                        </Alert>
+                    !Users.isItemInCart(id) ?
+                        <button className="btn btn-success mb-3" onClick={() => Users.addToCart(id, price)}>Add to cart</button>
                         :
-                        <Alert variant="success">
-                            In cart
-                        </Alert>
+                        <button className="btn btn-dark mb-3" onClick={() => Users.removeFromCart(id)}>Remove from cart</button>
                 }
-
                 <p>{price}</p>
             </div>
         </div>

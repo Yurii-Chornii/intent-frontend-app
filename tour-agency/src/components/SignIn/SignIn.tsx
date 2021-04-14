@@ -6,7 +6,6 @@ import "./SignIn.scss";
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import {Col, Modal} from "react-bootstrap";
-import {IUserDB} from "../../interfaces/IUserDB";
 
 const SignIn = observer(() => {
     const history = useHistory();
@@ -57,10 +56,9 @@ const SignIn = observer(() => {
                 showModal("Warning", "Try again")
             }else {
                 Users.signIn(foundUser);
+                Users.setUserBalance(foundUser.balance)
+                history.push("/tours");
             }
-            // const success = Users.signIn(login, password);
-            // if (!success) showModal("Something went wrong", "Please check your login and password!")
-            // else history.push("/tours")
         }
         setSignInFormValidated(true);
     };
@@ -98,6 +96,8 @@ const SignIn = observer(() => {
                 Users.setSignInPageView("SignIn")
             }else {
                 Users.signIn(foundUser);
+                Users.setUserBalance(foundUser.balance)
+                history.push("/tours");
             }
         }
         setSignUpFormValidated(true);
@@ -115,22 +115,18 @@ const SignIn = observer(() => {
         </Modal.Footer>
     </Modal>
 
-    // //todo
-    // const getData = async () => {
-    //     await fetch("http://localhost:8765/api/tours/?page=1&size=9").then(value => value.json()).then(value => console.log(value))
-    // }
-
     const logOut = async () => {
         await fetch(`http://localhost:8765/api/users/signout?userid=${Users.loginedUserDB?.id}`)
-            .then(value => value.json())
             .then(value => {
-                console.log(value)
-
+                setSignInFormValidated(false);
+                setSignUpFormValidated(false);
+                Users.clearLoginedUserDb();
+                Users.setSignInPageView("SignIn");
+                Users.deleteUserFromLocalstorage();
+                Users.setUserCartItemsIds([]);
+                Users.setUserCartItemsFull([]);
             })
             .catch(e => console.log(e))
-        Users.clearLoginedUserDb();
-        Users.setSignInPageView("SignIn");
-        Users.deleteUserFromLocalstorage();
     }
 
     return (
@@ -138,13 +134,6 @@ const SignIn = observer(() => {
             <header className="signIn__header mb-3">
                 <h2>{Users.signInPageView}</h2>
                 {modal}
-
-
-                {/*<button onClick={() => {*/}
-                {/*    getData()*/}
-                {/*}}>test</button>*/}
-
-
             </header>
             {Users.signInPageView === "SignUp" && (
                 <section>
@@ -157,7 +146,8 @@ const SignIn = observer(() => {
                                     name="login"
                                     type="text"
                                     placeholder="Login"
-                                    pattern="^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+                                    pattern= "[A-Za-zЄ-ЯҐа-їґ -]*"
+                                    // pattern="^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
                                 />
                                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                                 <Form.Control.Feedback type="invalid">
@@ -199,7 +189,8 @@ const SignIn = observer(() => {
                                     name="login"
                                     type="text"
                                     placeholder="Login"
-                                    pattern="^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+                                    pattern= "[A-Za-zЄ-ЯҐа-їґ -]*"
+                                    // pattern="^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
                                 />
                                 <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
                                 <Form.Control.Feedback type="invalid">
@@ -239,7 +230,6 @@ const SignIn = observer(() => {
                         list</Button>
                 </section>
             )}
-
         </div>
     );
 })
