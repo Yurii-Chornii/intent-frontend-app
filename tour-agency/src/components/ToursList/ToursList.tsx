@@ -4,14 +4,14 @@ import data from "../../store/Data"
 import Card from "../Card/Card";
 import Users from "../../store/Users";
 import {useHistory} from "react-router-dom";
-import {Modal} from "react-bootstrap";
+import {Col, Form, Modal, Row} from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import "./ToursList.scss"
 
 const ToursList = observer(() => {
     const history = useHistory();
     const {minPrice, maxPrice, pageNumber, pageSize, sortOrder} = data;
-    const [showSortParams, setShowSortParams] = useState(false);
+    // const [showSortParams, setShowSortParams] = useState(false);
     const [show, setShow] = useState(false);
     const [modalHeader, setModalHeader] = useState("");
     const [modalBody, setModalbody] = useState("");
@@ -56,15 +56,15 @@ const ToursList = observer(() => {
     }, [Users.loginedUserDB, Users.userCartItemsIds])
 
 
-    const showParamsHandler = (e: any): void => {
-        if (!showSortParams) {
-            setShowSortParams(true);
-            e.target.classList.add("opened-params");
-        } else {
-            setShowSortParams(false);
-            e.target.classList.remove("opened-params");
-        }
-    }
+    // const showParamsHandler = (e: any): void => {
+    //     if (!showSortParams) {
+    //         setShowSortParams(true);
+    //         e.target.classList.add("opened-params");
+    //     } else {
+    //         setShowSortParams(false);
+    //         e.target.classList.remove("opened-params");
+    //     }
+    // }
 
     const paramsFormHandler = (e: any): void => {
         e.preventDefault();
@@ -89,19 +89,43 @@ const ToursList = observer(() => {
     }
 
     const params = <div className="params">
-        Count tours on the page:
-        <select defaultValue={data.pageSize} name="countToursOnPage" id="countToursOnPage"
-                onChange={(e) => {
-                    data.setPageSize(+e.target.value);
-                    data.setPage(1);
-                }}>
-            <option value="3">3</option>
-            <option value="6">6</option>
-            <option value="9">9</option>
-            <option value="12">12</option>
-        </select>
-        <i className="fas fa-funnel-dollar"/>
-        {
+        <div>
+            <Form inline className="mt-1">
+                        <Form.Label>Count tours on the page:</Form.Label>
+                <Form.Control
+                    as="select"
+                    className="mr-sm-2 ml-2"
+                    id="selectCountTours"
+                    defaultValue={data.pageSize}
+                    onChange={(e) => {
+                        data.setPageSize(+e.target.value);
+                        data.setPage(1);
+                    }}
+                    custom
+                >
+                    <option value="3">3</option>
+                    <option value="6">6</option>
+                    <option value="9">9</option>
+                    <option value="12">12</option>
+                </Form.Control>
+                <i className="fas fa-sort-numeric-down" style={{"color": data.sortOrder === "price,asc" ? "green" : ""}}
+                   onClick={() => sortHandler("price,asc")}/>
+                <i className="fas fa-sort-numeric-down-alt"
+                   style={{"color": data.sortOrder === "price,desc" ? "green" : ""}}
+                   onClick={() => sortHandler("price,desc")}/>
+            </Form>
+            {/*<select defaultValue={data.pageSize} name="countToursOnPage" id="countToursOnPage"*/}
+            {/*        onChange={(e) => {*/}
+            {/*            data.setPageSize(+e.target.value);*/}
+            {/*            data.setPage(1);*/}
+            {/*        }}>*/}
+            {/*    <option value="3">3</option>*/}
+            {/*    <option value="6">6</option>*/}
+            {/*    <option value="9">9</option>*/}
+            {/*    <option value="12">12</option>*/}
+            {/*</select>*/}
+        </div>
+        <div>
             <form onSubmit={paramsFormHandler}>
                 <input type="number" placeholder={"price from " + data.minPrice} min="0" step="100"/>
                 <input type="number" placeholder={"price till " + data.maxPrice} min="100" step="100"/>
@@ -114,11 +138,7 @@ const ToursList = observer(() => {
                     clear
                 </button>
             </form>
-        }
-        <i className="fas fa-sort-numeric-down" style={{"color": data.sortOrder === "price,asc" ? "green" : ""}}
-           onClick={() => sortHandler("price,asc")}/>
-        <i className="fas fa-sort-numeric-down-alt" style={{"color": data.sortOrder === "price,desc" ? "green" : ""}}
-           onClick={() => sortHandler("price,desc")}/>
+        </div>
     </div>
 
     const pagination = <div className="pagination">
@@ -152,8 +172,8 @@ const ToursList = observer(() => {
 
     return (
         <div>
+            {modal}
             <header className="logined-user-box">
-                {modal}
                 <div>
                     {
                         Users.loginedUserDB && (
@@ -164,10 +184,9 @@ const ToursList = observer(() => {
                         )
                     }
                 </div>
-                <div>
+                <div className="ml-3">
                     <span onClick={() => history.push("/cart")}>
-                        Your cart -
-                        <i className="fas fa-shopping-cart"/>
+                        <b><i className="fab fa-opencart" style={{fontSize: "25px"}}/></b>
                     </span>
                 </div>
             </header>
@@ -176,8 +195,8 @@ const ToursList = observer(() => {
                     <>
                         <div className="sort-and-filter-box">
                             <div className="sort-and-filter-box__menu">
-                                <i className="fas fa-chevron-left arrow" onClick={(e) => showParamsHandler(e)}/>
-                                {showSortParams && params}
+                                {/*<i className="fas fa-chevron-left arrow" onClick={(e) => showParamsHandler(e)}/>*/}
+                                {params}
                             </div>
                         </div>
                         {data.toursDB && data.toursDB.map(value => (

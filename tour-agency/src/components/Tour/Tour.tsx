@@ -82,7 +82,7 @@ const Tour = observer(() => {
                                                 onClick={() => Users.removeFromCart(tour.id)}>Remove from cart</button>
                                 }
                             </div>
-                            <b>{tour.price}</b>
+                            <b>{tour.price}$</b>
                         </footer>
                     </div>) : (<div>
                     <h2 style={{textAlign: "center"}}>Loading...</h2>
