@@ -16,7 +16,7 @@ const CartItem = observer((props: ITour) => {
             </div>
             <div className="cart-item__body">
                 <h3>{title}</h3>
-                <p>{price}</p>
+                <p>{price}$</p>
             </div>
             <span className="cart-item__delete" onClick={() => {
                 Users.removeFromCart(id);

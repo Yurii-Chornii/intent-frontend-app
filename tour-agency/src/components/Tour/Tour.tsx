@@ -54,7 +54,7 @@ const Tour = observer(() => {
     return (
         <div>
             <Link to="/tours">
-                <button className="btn btn-success">back to list</button>
+                <button className="btn btn-success m-3">back to list</button>
             </Link>
             {
                 tour.title !== "" && tour.id !== 0 ? (
@@ -82,7 +82,7 @@ const Tour = observer(() => {
                                                 onClick={() => Users.removeFromCart(tour.id)}>Remove from cart</button>
                                 }
                             </div>
-                            <b>{tour.price}</b>
+                            <b>{tour.price}$</b>
                         </footer>
                     </div>) : (<div>
                     <h2 style={{textAlign: "center"}}>Loading...</h2>

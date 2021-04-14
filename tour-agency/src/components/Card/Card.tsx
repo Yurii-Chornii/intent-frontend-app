@@ -31,7 +31,7 @@ export default function Card(props: ICardProps) {
                         :
                         <button className="btn btn-dark mb-3" onClick={() => Users.removeFromCart(id)}>Remove from cart</button>
                 }
-                <p>{price}</p>
+                <p>{price}$</p>
             </div>
         </div>
 

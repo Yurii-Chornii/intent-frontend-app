@@ -6,6 +6,8 @@ import "./SignIn.scss";
 import Button from 'react-bootstrap/Button'
 import Form from 'react-bootstrap/Form'
 import {Col, Modal} from "react-bootstrap";
+import data from "../../store/Data"
+
 
 const SignIn = observer(() => {
     const history = useHistory();
@@ -21,12 +23,23 @@ const SignIn = observer(() => {
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
 
+    const getUserBalance = async () => {
+        const response = await fetch('http://localhost:8765/api/users/' + Users.loginedUserDB?.id)
+            .then(value => value.json())
+            .then(value => value)
+            .catch(e => console.log(e))
+        if (response.balance){
+            Users.setUserBalance(response.balance)
+        }
+    }
+
     useEffect(() => {
         let loginedUser = localStorage.getItem("loginedUser");
         if(loginedUser !== null){
             loginedUser = JSON.parse(loginedUser);
             Users.setLoginedUserDB(loginedUser);
-            Users.setSignInPageView("Logined")
+            Users.setSignInPageView("Logined");
+            getUserBalance()
         }
     }, [])
 
@@ -125,6 +138,11 @@ const SignIn = observer(() => {
                 Users.deleteUserFromLocalstorage();
                 Users.setUserCartItemsIds([]);
                 Users.setUserCartItemsFull([]);
+                data.setSortOrder("id");
+                data.setMinPrice(0);
+                data.setMaxPrice(5000);
+                data.setPage(1);
+                data.setPageSize(6);
             })
             .catch(e => console.log(e))
     }
