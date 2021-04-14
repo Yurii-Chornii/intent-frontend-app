@@ -1,29 +1,60 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {observer} from "mobx-react-lite";
 import data from "../../store/Data"
 import Card from "../Card/Card";
-import "./ToursList.scss"
 import Users from "../../store/Users";
 import {useHistory} from "react-router-dom";
+import {Modal} from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import "./ToursList.scss"
 
 const ToursList = observer(() => {
-    const [showSortParams, setShowSortParams] = useState(false);
-    const {currentPage, countOfPages} = data;
     const history = useHistory();
+    const {minPrice, maxPrice, pageNumber, pageSize, sortOrder} = data;
+    const [showSortParams, setShowSortParams] = useState(false);
+    const [show, setShow] = useState(false);
+    const [modalHeader, setModalHeader] = useState("");
+    const [modalBody, setModalbody] = useState("");
 
-    useEffect(() => {
-        if (data.tours.length === 0) {
-            data.fetchTours();
+    const getTours = async (
+        minPrice: number,
+        maxPrice: number,
+        pageNumber: number,
+        pageSize: number,
+        sortOrder: string
+    ) => {
+        const response = await fetch(`http://localhost:8765/api/tours/` +
+            `?minPrice=${minPrice}` +
+            `&maxPrice=${maxPrice}` +
+            `&page=${pageNumber - 1}` +
+            `&size=${pageSize}` +
+            `&sort=${sortOrder}`
+        )
+            .then(value => value.json())
+            .then(value => value)
+            .catch(e => console.error(e))
+
+        if (!response) {
+            showModal("Ups..", "smth went wrong while fetch tours");
+        } else {
+            const {content, totalPages} = response;
+            data.setToursDB(content);
+            data.setTotalPages(totalPages);
         }
-    }, [])
+    }
 
     useEffect(() => {
-        if (!Users.loginedUser) history.push("/");
+        getTours(minPrice, maxPrice, pageNumber, pageSize, sortOrder)
+    }, [minPrice, maxPrice, pageNumber, pageSize, sortOrder])
+
+    useEffect(() => {
+        if (!Users.loginedUserDB) history.push("/");
     }, [history])
 
-    // const cartbox = <div>
-    //     {Users.LoginedUserCartTours.map(item => <div key={item.id}>{item.title} <p>{item.price}</p></div>)}
-    // </div>
+    useEffect(() => {
+        Users.getUserCartItems();
+    }, [Users.loginedUserDB, Users.userCartItemsIds])
+
 
     const showParamsHandler = (e: any): void => {
         if (!showSortParams) {
@@ -40,46 +71,29 @@ const ToursList = observer(() => {
         const from = +e.target[0].value;
         const till = +e.target[1].value;
         if (from !== till && from < till) {
-            data.filterByPrice(from, till);
-            data.setMinPriceFilterMemory(from);
-            data.setMaxPriceFilterMemory(till);
-            data.setCurrentPage(1);
+            data.setMinPrice(from);
+            data.setMaxPrice(till);
+            data.setPage(1)
         } else {
-            alert("Filter params is not valid!")
+            showModal("Filter params is not valid!", "Please check filter params")
         }
-    }
-
-    const deleteFilter = (): void => {
-        data.deleteFilterMemory();
-        data.fetchTours().then(() => {
-            if (data.sortedStatus) {
-                data.sort(data.sortedStatus);
-            }
-        })
     }
 
     const sortHandler = (direction: string): void => {
-        if (data.sortedStatus === undefined || data.sortedStatus !== direction) {
-            data.setSortedStatus(direction);
-            data.sort(direction);
-        } else {
-            data.setSortedStatus(undefined);
-            if (!data.maxPriceFilterMemory) {
-                data.fetchTours();
-            } else {
-                const min = data.minPriceFilterMemory ? data.minPriceFilterMemory : 0;
-                const max = data.maxPriceFilterMemory;
-                data.filterByPrice(min, max);
-            }
+        if (data.sortOrder === direction) {
+            data.setSortOrder("id")
+        } else if (data.sortOrder === "id" || data.sortOrder !== direction) {
+            data.setSortOrder(direction)
         }
+        data.setPage(1)
     }
 
     const params = <div className="params">
         Count tours on the page:
-        <select defaultValue={data.countCardsOnPage} name="countToursOnPage" id="countToursOnPage"
+        <select defaultValue={data.pageSize} name="countToursOnPage" id="countToursOnPage"
                 onChange={(e) => {
-                    data.changeCountCardsOnPage(+e.target.value);
-                    data.setCurrentPage(1);
+                    data.setPageSize(+e.target.value);
+                    data.setPage(1);
                 }}>
             <option value="3">3</option>
             <option value="6">6</option>
@@ -88,45 +102,64 @@ const ToursList = observer(() => {
         </select>
         <i className="fas fa-funnel-dollar"/>
         {
-            data.minPriceFilterMemory || data.maxPriceFilterMemory ?
-                (
-                    <>
-                        <div>{`Filtered by price from ${data.minPriceFilterMemory} till ${data.maxPriceFilterMemory}`}</div>
-                        <i className="far fa-window-close" onClick={deleteFilter}/>
-                    </>
-                ) : (
-                    <form onSubmit={paramsFormHandler}>
-                        <input type="number" placeholder="price from" min="0" step="50"/>
-                        <input type="number" placeholder="price till" min="150" step="50"/>
-                        <button>submit</button>
-                    </form>
-
-                )
+            <form onSubmit={paramsFormHandler}>
+                <input type="number" placeholder={"price from " + data.minPrice} min="0" step="100"/>
+                <input type="number" placeholder={"price till " + data.maxPrice} min="100" step="100"/>
+                <button type="submit">submit</button>
+                <button type="reset" onClick={() => {
+                    data.setMinPrice(0);
+                    data.setMaxPrice(5000);
+                    data.setPage(1)
+                }}>
+                    clear
+                </button>
+            </form>
         }
-        <i className="fas fa-sort-numeric-down" style={{"color": data.sortedStatus === "asc" ? "green" : ""}}
-           onClick={() => sortHandler("asc")}/>
-        <i className="fas fa-sort-numeric-down-alt" style={{"color": data.sortedStatus === "desc" ? "green" : ""}}
-           onClick={() => sortHandler("desc")}/>
+        <i className="fas fa-sort-numeric-down" style={{"color": data.sortOrder === "price,asc" ? "green" : ""}}
+           onClick={() => sortHandler("price,asc")}/>
+        <i className="fas fa-sort-numeric-down-alt" style={{"color": data.sortOrder === "price,desc" ? "green" : ""}}
+           onClick={() => sortHandler("price,desc")}/>
     </div>
 
     const pagination = <div className="pagination">
-        {currentPage > 2 && <i className="fas fa-step-backward" onClick={() => data.setCurrentPage(1)}/>}
-        {currentPage > 1 && <i className="fas fa-caret-left" onClick={() => data.decrementPage()}/>}
-        {`${currentPage} of ${countOfPages}`}
-        {currentPage < countOfPages && <i className="fas fa-caret-right" onClick={() => data.incrementPage()}/>}
-        {currentPage < (countOfPages - 1) &&
-        <i className="fas fa-step-forward" onClick={() => data.setCurrentPage(countOfPages)}/>}
+        {data.pageNumber > 2 && <i className="fas fa-step-backward" onClick={() => data.setPage(1)}/>}
+        {data.pageNumber > 1 && <i className="fas fa-caret-left" onClick={() => data.decrementPage()}/>}
+        {`${data.pageNumber} of ${data.totalPages}`}
+        {data.pageNumber < data.totalPages && <i className="fas fa-caret-right" onClick={() => data.incrementPage()}/>}
+        {data.pageNumber < (data.totalPages - 1) &&
+        <i className="fas fa-step-forward" onClick={() => data.setPage(data.totalPages)}/>}
     </div>
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+    const showModal = (headerText: string, bodyText: string): void => {
+        setModalHeader(headerText);
+        setModalbody(bodyText)
+        handleShow();
+    }
+
+    const modal = <Modal show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+            <Modal.Title>{modalHeader}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalBody}</Modal.Body>
+        <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+                Close
+            </Button>
+        </Modal.Footer>
+    </Modal>
 
     return (
         <div>
-
             <header className="logined-user-box">
+                {modal}
                 <div>
                     {
-                        Users.loginedUser && (
+                        Users.loginedUserDB && (
                             <span onClick={() => history.push("/")}>
-                                <i className="far fa-user"/> {Users.loginedUser.login}
+                                <i className="far fa-user"/> {Users.loginedUserDB.userName} <span
+                                style={{color: "green"}}>{Users.userBalance}$</span>
                             </span>
                         )
                     }
@@ -139,25 +172,22 @@ const ToursList = observer(() => {
                 </div>
             </header>
             <div className="cads-box">
-                <div className="sort-and-filter-box">
-                    <div className="sort-and-filter-box__menu">
-                        <i className="fas fa-chevron-left arrow" onClick={(e) => showParamsHandler(e)}/>
-                        {showSortParams && params}
-                    </div>
-                </div>
-                {data.tours.length === 0 ? (<h3>Tours is not found</h3>) : (
+                {data.toursDB.length === 0 ? (<h3>Loading...</h3>) : (
                     <>
-                        {data.currentTours && data.currentTours.map(value => (
+                        <div className="sort-and-filter-box">
+                            <div className="sort-and-filter-box__menu">
+                                <i className="fas fa-chevron-left arrow" onClick={(e) => showParamsHandler(e)}/>
+                                {showSortParams && params}
+                            </div>
+                        </div>
+                        {data.toursDB && data.toursDB.map(value => (
                             <Card key={value.id} tour={value}/>
                         ))}
                     </>
                 )}
             </div>
-            {/*{*/}
-            {/*    Users.loginedUser && Users.loginedUser.cart.length > 0 && cartbox*/}
-            {/*}*/}
             {
-                countOfPages > 1 && pagination
+                data.totalPages > 1 && pagination
             }
         </div>
     );

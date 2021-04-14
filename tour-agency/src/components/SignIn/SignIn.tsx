@@ -1,76 +1,235 @@
+import React, {useEffect, useRef, useState} from "react";
 import {observer} from "mobx-react-lite";
-import { useHistory } from "react-router-dom";
+import {useHistory} from "react-router-dom";
 import Users from "../../store/Users";
 import "./SignIn.scss";
+import Button from 'react-bootstrap/Button'
+import Form from 'react-bootstrap/Form'
+import {Col, Modal} from "react-bootstrap";
 
 const SignIn = observer(() => {
     const history = useHistory();
 
+    const [signInFormValidated, setSignInFormValidated] = useState(false);
+    const [signUpFormValidated, setSignUpFormValidated] = useState(false);
+    const [show, setShow] = useState(false);
+    const [modalHeader, setModalHeader] = useState("");
+    const [modalBody, setModalbody] = useState("");
+
+    const modalRef = useRef(null)
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    useEffect(() => {
+        let loginedUser = localStorage.getItem("loginedUser");
+        if(loginedUser !== null){
+            loginedUser = JSON.parse(loginedUser);
+            Users.setLoginedUserDB(loginedUser);
+            Users.setSignInPageView("Logined")
+        }
+    }, [])
+
+    const handleSignInForm = async (event: any) => {
+        const signInForm = event.currentTarget;
+        event.preventDefault();
+        event.stopPropagation();
+        if (signInForm.checkValidity() === true) {
+            const login = signInForm.login.value;
+            const password = signInForm.password.value;
+            const foundUser = await fetch('http://localhost:8765/api/users/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    userName: login,
+                    password: password
+                })
+            }).then(value => value.json())
+                .then(value => value)
+                .catch(e => console.error(e))
+
+            if (foundUser !== undefined && "message" in foundUser && foundUser.message){
+                showModal("Warning", foundUser.message)
+            }else if(foundUser === undefined){
+                showModal("Warning", "Try again")
+            }else {
+                Users.signIn(foundUser);
+                Users.setUserBalance(foundUser.balance)
+                history.push("/tours");
+            }
+        }
+        setSignInFormValidated(true);
+    };
+
+    const showModal = (headerText: string, bodyText: string): void => {
+        setModalHeader(headerText);
+        setModalbody(bodyText)
+        handleShow();
+    }
+
+    const handleSignUpForm = async (event: any) => {
+        const signUpForm = event.currentTarget;
+        event.preventDefault();
+        event.stopPropagation();
+        if (signUpForm.checkValidity() === true) {
+            const login = signUpForm.login.value;
+            const password = signUpForm.password.value;
+
+            const foundUser = await fetch('http://localhost:8765/api/users/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify({
+                    userName: login,
+                    password: password
+                })
+            }).then(value => value.json())
+                .then(value => value)
+                .catch(e => console.error(e))
+
+            if (foundUser !== undefined && "message" in foundUser && foundUser.message){
+                showModal("Warning", foundUser.message)
+            }else if(foundUser === undefined){
+                Users.setSignInPageView("SignIn")
+            }else {
+                Users.signIn(foundUser);
+                Users.setUserBalance(foundUser.balance)
+                history.push("/tours");
+            }
+        }
+        setSignUpFormValidated(true);
+    };
+
+    const modal = <Modal ref={modalRef} show={show} onHide={handleClose}>
+        <Modal.Header closeButton>
+            <Modal.Title>{modalHeader}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{modalBody}</Modal.Body>
+        <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+                Close
+            </Button>
+        </Modal.Footer>
+    </Modal>
+
+    const logOut = async () => {
+        await fetch(`http://localhost:8765/api/users/signout?userid=${Users.loginedUserDB?.id}`)
+            .then(value => {
+                setSignInFormValidated(false);
+                setSignUpFormValidated(false);
+                Users.clearLoginedUserDb();
+                Users.setSignInPageView("SignIn");
+                Users.deleteUserFromLocalstorage();
+                Users.setUserCartItemsIds([]);
+                Users.setUserCartItemsFull([]);
+            })
+            .catch(e => console.log(e))
+    }
 
     return (
         <div className="signIn">
-            <header className="signIn__header">
+            <header className="signIn__header mb-3">
                 <h2>{Users.signInPageView}</h2>
+                {modal}
             </header>
             {Users.signInPageView === "SignUp" && (
                 <section>
-                    <form onSubmit={(e: any) => {
-                        e.preventDefault();
-                        const login = e.target[0].value;
-                        const password = e.target[1].value;
-                        if (!login || !password) alert("No login or password")
-                        else {
-                            const success = Users.signUp(login, password);
-                            if (!success) alert("This login is occupated")
-                        }
-
-                    }}>
-                        <input type="text" placeholder="login"/>
-                        <input type="password" placeholder="password"/>
-                        <button>sign up</button>
-                        <p>
+                    <Form noValidate validated={signUpFormValidated} onSubmit={handleSignUpForm}>
+                        <Form.Row>
+                            <Form.Group as={Col} md="6" controlId="signUpFormValidation01">
+                                <Form.Label>Login</Form.Label>
+                                <Form.Control
+                                    required
+                                    name="login"
+                                    type="text"
+                                    placeholder="Login"
+                                    pattern= "[A-Za-zЄ-ЯҐа-їґ -]*"
+                                    // pattern="^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+                                />
+                                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">
+                                    Invalid login.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group as={Col} md="6" controlId="signUpFormValidation02">
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control
+                                    required
+                                    type="password"
+                                    name="password"
+                                    placeholder="Password"
+                                    pattern="^.{4,20}$"
+                                />
+                                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">
+                                    The password must be between 4 and 20 characters long!
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Form.Row>
+                        <Button type="submit" variant="success">Submit</Button>
+                        <p className="mt-3">
                             Already have an account?
                             <b onClick={() => Users.setSignInPageView("SignIn")}> Sign In</b>
                         </p>
-                    </form>
+                    </Form>
+
                 </section>
             )}
             {Users.signInPageView === "SignIn" && (
                 <section>
-                    <form onSubmit={(e: any) => {
-                        e.preventDefault();
-                        const login = e.target[0].value;
-                        const password = e.target[1].value;
-                        if (!login || !password) alert("No login or password")
-                        else {
-                            const success = Users.signIn(login, password);
-                            if (!success) alert("Wrong login or password")
-                            else history.push("/tours")
-                        }
-
-                    }}>
-                        <input type="text" placeholder="login"/>
-                        <input type="password" placeholder="password"/>
-                        <button>sign in</button>
-                        <p>
+                    <Form noValidate validated={signInFormValidated} onSubmit={handleSignInForm}>
+                        <Form.Row>
+                            <Form.Group as={Col} md="6" controlId="validationCustom01">
+                                <Form.Label>Login</Form.Label>
+                                <Form.Control
+                                    required
+                                    name="login"
+                                    type="text"
+                                    placeholder="Login"
+                                    pattern= "[A-Za-zЄ-ЯҐа-їґ -]*"
+                                    // pattern="^(?=[a-zA-Z0-9._]{4,20}$)(?!.*[_.]{2})[^_.].*[^_.]$"
+                                />
+                                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">
+                                    Invalid login.
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                            <Form.Group as={Col} md="6" controlId="validationCustom02">
+                                <Form.Label>Password</Form.Label>
+                                <Form.Control
+                                    required
+                                    type="password"
+                                    name="password"
+                                    placeholder="Password"
+                                    pattern="^.{4,20}$"
+                                />
+                                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                                <Form.Control.Feedback type="invalid">
+                                    The password must be between 4 and 20 characters long!
+                                </Form.Control.Feedback>
+                            </Form.Group>
+                        </Form.Row>
+                        <Button type="submit" variant="success">Submit</Button>
+                        <p className="mt-3">
                             Don't have an account?
                             <b onClick={() => Users.setSignInPageView("SignUp")}> Sign Up</b>
                         </p>
-                    </form>
+                    </Form>
                 </section>
             )}
             {Users.signInPageView === "Logined" && (
                 <section>
-                    <p>You are logined as <b>{Users.loginedUser?.login}</b></p>
-                    <button onClick={() => {
-                        Users.setLoginedUser(undefined);
-                        Users.setIsSignedIn(false);
-                        Users.setSignInPageView("SignIn");
-                    }}>log out</button>
-                    <button onClick={()=> history.push("/tours")}>tours list</button>
+                    <p>You are logined as <b>{Users.loginedUserDB?.userName}</b></p>
+                    <Button variant="danger" onClick={() => {
+                        logOut();
+                    }}>Log out</Button>
+                    <Button className="ml-2" variant="success" onClick={() => history.push("/tours")}>Tours
+                        list</Button>
                 </section>
             )}
-
         </div>
     );
 })

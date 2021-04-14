@@ -1,69 +1,91 @@
-import {Link, useParams} from "react-router-dom";
-import data from "../../store/Data"
+import {Link, useHistory, useParams} from "react-router-dom";
 import {observer} from "mobx-react-lite";
 import {useEffect, useState} from "react";
 import "./Tour.scss"
 import Users from "../../store/Users";
 
-
 interface IParams {
     id: string
 }
 
+interface ItourDB {
+    id: number,
+    title: string,
+    description: string,
+    price: number,
+    imageUrl: string
+}
+
+const initTour: ItourDB = {
+    id: 0,
+    title: "",
+    description: "null",
+    price: 0,
+    imageUrl: ""
+}
+
 const Tour = observer(() => {
-    const [isInCart, setIsInCart] = useState(false);
+    const [tour, setTour] = useState(initTour);
     const params = useParams<IParams>();
+    const history = useHistory();
+
 
     useEffect(() => {
-        data.findAndSetCurrentTour(+params.id);
+        if (!Users.loginedUserDB) history.push("/");
+    }, [history])
 
-        return () => {
-            data.setCurrentTour(undefined);
-        }
-    }, [params]);
+    const findTour = async (tourId: number) => {
+        await fetch('http://localhost:8765/api/tours/id/' + tourId)
+            .then(value => value.json())
+            .then(value => {
+                if (value.message) {
+                    history.push("/tours")
+                } else {
+                    setTour(value)
+                }
+            })
+            .catch(e => console.error(e))
+    }
 
     useEffect(() => {
-        if (Users.loginedUser?.cart.findIndex(value => value === +params.id) !== -1) {
-            setIsInCart(true)
-        }
+        findTour(+params.id)
     }, [params.id])
 
     return (
         <div>
             <Link to="/tours">
-                <button className="tour-page-button">back to list</button>
+                <button className="btn btn-success">back to list</button>
             </Link>
             {
-                data.currentTour ? (
+                tour.title !== "" && tour.id !== 0 ? (
                     <div className="tour">
                         <header className="tour__header">
-                            <img src={data.currentTour.imageUrl} alt={data.currentTour.title}/>
+                            <img src={tour.imageUrl} alt={tour.title}/>
                         </header>
                         <section>
                             <article>
-                                <h3 className="tour__title">{data.currentTour.title}</h3>
+                                <h3 className="tour__title">{tour.title}</h3>
                                 <p className="tour__description">
-                                    {data.currentTour.description}
+                                    {tour.description}
                                 </p>
                             </article>
                         </section>
                         <footer className="tour__footer">
                             <div>
-                                {!isInCart ? <button className="tour-page-button" onClick={() => {
-                                    Users.addNewItemToUserCart(+params.id);
-                                    setIsInCart(true);
-                                }}>add to cart</button>
-                                :
-                                    <button className="tour-page-button" onClick={() => {
-                                        Users.deleteItemFromCart(+params.id);
-                                        setIsInCart(false);
-                                    }}>remove from cart</button>
+                                {
+                                    !Users.isItemInCart(tour.id) ?
+                                        <button className="btn btn-success mb-3"
+                                                onClick={() => Users.addToCart(tour.id, tour.price)}>Add to
+                                            cart</button>
+                                        :
+                                        <button className="btn btn-dark mb-3"
+                                                onClick={() => Users.removeFromCart(tour.id)}>Remove from cart</button>
                                 }
                             </div>
-                            <b>{data.currentTour.price}</b>
+                            <b>{tour.price}</b>
                         </footer>
                     </div>) : (<div>
-                    <h2>"tour is not found"</h2>
+                    <h2 style={{textAlign: "center"}}>Loading...</h2>
                 </div>)
             }
         </div>
